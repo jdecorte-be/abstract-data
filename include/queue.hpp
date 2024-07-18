@@ -7,7 +7,7 @@
 namespace ft
 {
 
-    template <class T, class Container = deque<T>>
+    template <class T, class Container = deque<T> >
     class queue
     {
     public:

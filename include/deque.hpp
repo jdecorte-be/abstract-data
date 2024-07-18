@@ -7,8 +7,6 @@
 #include "exception.hpp"
 #include "type_traits.hpp"
 #include "string.hpp"
-#include "cstddef.hpp"
-
 namespace ft
 {
 
@@ -16,10 +14,6 @@ namespace ft
     class deque
     {
     public:
-        //////////////////////////////
-        // Iterator subclass
-        //////////////////////////////
-
         template <bool IsConst>
         class dequeIterator
         {
@@ -392,18 +386,14 @@ namespace ft
         reference at(size_type n)
         {
             if (this->size() <= n)
-            {
-                throw ft::out_of_range("deque::_M_range_check: __n (which is " + ft::to_string(n) + ")>= this->size() (which is " + ft::to_string(this->size()) + ")");
-            }
+                throw ft::out_of_range("deque");
             return ((*this)[n]);
         }
 
         const_reference at(size_type n) const
         {
             if (this->size() <= n)
-            {
-                throw ft::out_of_range("deque::_M_range_check: __n (which is " + ft::to_string(n) + ")>= this->size() (which is " + ft::to_string(this->size()) + ")");
-            }
+                throw ft::out_of_range("deque");
             return ((*this)[n]);
         }
 

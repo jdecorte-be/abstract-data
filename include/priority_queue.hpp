@@ -2,11 +2,12 @@
 #define PRIORITY_QUEUE_HPP
 
 #include "vector.hpp"
+#include "functional.hpp"
 
 namespace ft
 {
 
-    template <class T, class Container = ft::vector<T>, class Compare = ft::less<typename Container::value_type>>
+    template <class T, class Container = ft::vector<T>, class Compare = ft::less<typename Container::value_type> >
     class priority_queue
     {
     public:

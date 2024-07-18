@@ -1,11 +1,10 @@
 #ifndef ITERATOR_HPP
 #define ITERATOR_HPP
 
-// https://www.cplusplus.com/reference/iterator/
-// https://www.cplusplus.com/reference/iterator/iterator_traits/
-// https://www.fluentcpp.com/2018/05/08/std-iterator-deprecated/
+#include <iterator>
 
-#include "cstddef.hpp"
+#include "functional.hpp"
+#include "type_traits.hpp"
 
 namespace ft
 {
@@ -58,7 +57,6 @@ namespace ft
     template <class Iterator>
     class reverse_iterator
     {
-
     public:
         typedef Iterator iterator_type;
         typedef typename iterator_traits<Iterator>::iterator_category iterator_category;
@@ -169,6 +167,189 @@ namespace ft
 
     template <typename It1, typename It2>
     bool operator>=(const reverse_iterator<It1> &lhs, const reverse_iterator<It2> &rhs) { return lhs.base() <= rhs.base(); }
+
+    // * Map iterator =================================================================================================
+
+    template <class Key, class T, class Node>
+    class map_iterator
+    {
+    public:
+        typedef ft::pair<const Key, T> pair_type;
+        typedef typename ft::conditional<ft::is_const<Node>::value, const pair_type, pair_type>::type value_type;
+        typedef std::bidirectional_iterator_tag iterator_category;
+        typedef ft::ptrdiff_t difference_type;
+        typedef ft::size_t size_type;
+        typedef value_type *pointer;
+        typedef value_type &reference;
+
+    public:
+        Node *ptr;
+        Node *_end;
+
+    public:
+        //
+        // Constructor
+        //
+        map_iterator() : ptr(nullptr), _end(NULL) {}
+
+        map_iterator(Node *ptr) : ptr(ptr), _end(NULL) {}
+
+        map_iterator(Node *ptr, Node *end) : ptr(ptr), _end(end) {}
+
+        map_iterator(const map_iterator &src) : ptr(src.ptr), _end(src._end) {}
+
+        map_iterator &operator=(const map_iterator &src)
+        {
+            ptr = src.ptr;
+            _end = src._end;
+            return *this;
+        }
+
+        //
+        // Const casting
+        //
+        template <class OtherNode>
+        map_iterator(const map_iterator<Key, T, OtherNode> &src) : ptr(src.ptr), _end(src._end) {}
+
+
+        //
+        // Operators
+        //
+        Node *base() const
+        {
+            return ptr;
+        }
+
+        map_iterator &operator++()
+        {
+            if (this->ptr == NULL)
+                return *this;
+            else if (!this->ptr->parent && !this->ptr->right)
+            {
+                this->_end = this->ptr;
+                this->ptr = NULL;
+            }
+            else if (this->ptr->right)
+                this->ptr = down_bigger_node();
+            else
+                this->ptr = up_bigger_node(this->ptr);
+            return *this;
+        }
+
+        map_iterator operator++(int)
+        {
+            map_iterator<Key, T, Node> tmp = *this;
+            this->operator++();
+            return tmp;
+        }
+
+        map_iterator &operator--()
+        {
+            if (this->ptr == NULL)
+            {
+                if (_end)
+                    ptr = _end;
+            }
+            else if (!ptr->parent && !ptr->left)
+                ptr = NULL;
+            else if (ptr->left)
+                ptr = down_smallest_node();
+            else
+                ptr = up_smallest_node(ptr);
+            return *this;
+        }
+
+        map_iterator operator--(int)
+        {
+            map_iterator<Key, T, Node> tmp = *this;
+            this->operator--();
+            return tmp;
+        }
+
+        value_type &operator*() const
+        {
+            return ptr->data;
+        }
+
+        value_type *operator->() const
+        {
+            return &(ptr->data);
+        }
+
+        template <class OtherNode>
+        bool operator==(const map_iterator<Key, T, OtherNode> &tocomp) const
+        {
+            return ptr == tocomp.base();
+        }
+
+        template <class OtherNode>
+        bool operator!=(const map_iterator<Key, T, OtherNode> &tocomp) const
+        {
+            return ptr != tocomp.base();
+        }
+
+    private: // Private function like Next and Prev Node // Post order (root is end)
+        Node *up_bigger_node(Node *node)
+        {
+            Node *next;
+
+            if (!node->right)
+            {
+                next = node;
+                if (next->parent->right != next && next != next->parent->left)
+                    return (NULL);
+                while (next->parent != NULL && next == next->parent->right)
+                    next = next->parent;
+                next = next->parent;
+            }
+            else
+            {
+                next = node->right;
+                while (next->left)
+                    next = next->left;
+            }
+            return (next);
+        }
+
+        Node *down_bigger_node()
+        {
+            Node *tmp = this->ptr->right;
+
+            while (tmp->left)
+                tmp = tmp->left;
+            return tmp;
+        }
+
+        // Return next smalles
+        Node *down_smallest_node()
+        {
+            Node *tmp = this->ptr->left;
+
+            while (tmp->right)
+                tmp = tmp->right;
+            return tmp;
+        }
+
+        Node *up_smallest_node(Node *node)
+        {
+            Node *prev;
+
+            if (node->left == NULL || node->left == NULL)
+            {
+                prev = node;
+                while (prev->parent != NULL && prev == prev->parent->left)
+                    prev = prev->parent;
+                prev = prev->parent;
+            }
+            else
+            {
+                prev = node->left;
+                while (prev->right != NULL)
+                    prev = prev->right;
+            }
+            return (prev);
+        }
+    };
 
 }
 

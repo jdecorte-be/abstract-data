@@ -7,12 +7,11 @@
 #include "exception.hpp"
 #include "type_traits.hpp"
 #include "string.hpp"
-#include "cstddef.hpp"
 
 namespace ft
 {
 
-	template <class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<ft::pair<const Key, T> > >
+	template <class Key, class T, class Compare = ft::less<Key>, class Alloc = std::allocator<ft::pair<const Key, T> > >
 	class map
 	{
 	public:
@@ -27,193 +26,9 @@ namespace ft
 
 			ft::pair<const Key, T> data;
 
-			bt_node(ft::pair<const Key, T> data) : data(data) {}
+			bt_node(ft::pair<const Key, T> data) : left(NULL), right(NULL), parent(NULL), data(data) {}
 			const Key &getKey() { return data.first; }
 			T &getVal() { return data.second; }
-		};
-
-		//
-		// Map Iterator
-		//
-		template <bool is_const>
-		class map_iterator
-		{
-		public:
-			typedef ft::pair<const Key, T> pair_type;
-			typedef typename std::conditional<is_const, const pair_type, pair_type>::type value_type;
-			typedef typename std::conditional<is_const, const bt_node, bt_node>::type node_type;
-			typedef std::bidirectional_iterator_tag iterator_category;
-			typedef std::ptrdiff_t difference_type;
-			typedef size_t size_type;
-			typedef value_type *pointer;
-			typedef value_type &reference;
-
-		public:
-			node_type *ptr;
-			node_type *_end;
-
-		public:
-			//
-			// Constructor
-			//
-			map_iterator() : ptr(NULL), _end(NULL) {}
-
-			map_iterator(node_type *ptr) : ptr(ptr), _end(NULL) {}
-
-			map_iterator(node_type *ptr, node_type *end) : ptr(ptr), _end(end) {}
-
-			map_iterator(const map_iterator<is_const> &src) : ptr(src.ptr), _end(src._end) {}
-
-			map_iterator &operator=(const map_iterator &src)
-			{
-				ptr = src.ptr;
-				_end = src._end;
-				return *this;
-			}
-
-			//
-			// Const casting
-			//
-			template <bool B>
-			map_iterator(const map_iterator<B> &src, typename std::enable_if<!B>::type * = 0) : ptr(src.ptr), _end(src._end) {}
-
-			//
-			// Operators
-			//
-			node_type *base() const
-			{
-				return ptr;
-			}
-
-			map_iterator &operator++()
-			{
-				if (this->ptr == NULL)
-					return *this;
-				else if (!this->ptr->parent && !this->ptr->right)
-				{
-					this->_end = this->ptr;
-					this->ptr = NULL;
-				}
-				else if (this->ptr->right)
-					this->ptr = down_bigger_node();
-				else
-					this->ptr = up_bigger_node(this->ptr);
-				return *this;
-			}
-
-			map_iterator operator++(int)
-			{
-				map_iterator<is_const> tmp = *this;
-				this->operator++();
-				return tmp;
-			}
-
-			map_iterator &operator--()
-			{
-				if (this->ptr == NULL)
-				{
-					if (_end)
-						ptr = _end;
-				}
-				else if (!ptr->parent && !ptr->left)
-					ptr = NULL;
-				else if (ptr->left)
-					ptr = down_smallest_node();
-				else
-					ptr = up_smallest_node(ptr);
-				return *this;
-			}
-
-			map_iterator operator--(int)
-			{
-				map_iterator<is_const> tmp = *this;
-				this->operator--();
-				return tmp;
-			}
-
-			value_type &operator*() const
-			{
-				return ptr->data;
-			}
-
-			value_type *operator->() const
-			{
-				return &ptr->data;
-			}
-
-			template <bool B>
-			bool operator==(const map_iterator<B> tocomp) const
-			{
-				return ptr == tocomp.base();
-			}
-
-			template <bool B>
-			bool operator!=(const map_iterator<B> tocomp) const
-			{
-				return ptr != tocomp.base();
-			}
-
-		private: // Private function like Next and Prev Node // Post order (root is end)
-			node_type *up_bigger_node(node_type *node)
-			{
-				node_type *next;
-
-				if (!node->right)
-				{
-					next = node;
-					if (next->parent->right != next && next != next->parent->left)
-						return (NULL);
-					while (next->parent != NULL && next == next->parent->right)
-						next = next->parent;
-					next = next->parent;
-				}
-				else
-				{
-					next = node->right;
-					while (next->left)
-						next = next->left;
-				}
-				return (next);
-			}
-
-			node_type *down_bigger_node()
-			{
-				node_type *tmp = this->ptr->right;
-
-				while (tmp->left)
-					tmp = tmp->left;
-				return tmp;
-			}
-
-			// Return next smalles
-			node_type *down_smallest_node()
-			{
-				node_type *tmp = this->ptr->left;
-
-				while (tmp->right)
-					tmp = tmp->right;
-				return tmp;
-			}
-
-			node_type *up_smallest_node(node_type *node)
-			{
-				node_type *prev;
-
-				if (node->left == NULL || node->left == NULL)
-				{
-					prev = node;
-					while (prev->parent != NULL && prev == prev->parent->left)
-						prev = prev->parent;
-					prev = prev->parent;
-				}
-				else
-				{
-					prev = node->left;
-					while (prev->right != NULL)
-						prev = prev->right;
-				}
-				return (prev);
-			}
 		};
 
 		//
@@ -224,6 +39,17 @@ namespace ft
 		typedef T mapped_type;
 		typedef ft::pair<const key_type, mapped_type> value_type;
 		typedef Compare key_compare;
+		typedef typename Alloc::template rebind<bt_node>::other allocator_type;
+		typedef typename Alloc::reference reference;
+		typedef typename Alloc::const_reference const_reference;
+		typedef typename Alloc::pointer pointer;
+		typedef typename Alloc::const_pointer const_pointer;
+		typedef ft::map_iterator<Key, T, bt_node> iterator;
+		typedef ft::map_iterator<Key, T, const bt_node> const_iterator;
+		typedef ft::reverse_iterator<iterator> reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
+		typedef typename iterator::difference_type difference_type;
+		typedef typename iterator::size_type size_type;
 
 		//
 		// Value comp (nested class)
@@ -237,22 +63,10 @@ namespace ft
 			value_compare(key_compare c) : comp(c) {}
 
 		public:
-			typedef value_type first_arg;
-			typedef value_type second_arg;
-			bool operator()(const first_arg &x, const second_arg &y) const { return comp(x.first, y.first); }
+			typedef value_type first_argument_type;
+			typedef value_type second_argument_type;
+			bool operator()(const first_argument_type &x, const second_argument_type &y) const { return comp(x.first, y.first); }
 		};
-
-		typedef typename Alloc::template rebind<bt_node>::other allocator_type;
-		typedef typename Alloc::reference reference;
-		typedef typename Alloc::const_reference const_reference;
-		typedef typename Alloc::pointer pointer;
-		typedef typename Alloc::const_pointer const_pointer;
-		typedef map_iterator<false> iterator;
-		typedef map_iterator<true> const_iterator;
-		typedef ft::reverse_iterator<iterator> reverse_iterator;
-		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
-		typedef typename map_iterator<false>::difference_type difference_type;
-		typedef typename map_iterator<false>::size_type size_type;
 
 	private:
 		bt_node *root;
@@ -363,30 +177,26 @@ namespace ft
 		//
 		T &at(const key_type &key)
 		{
-			if (count(key))
-			{
-				iterator it = find(key);
-				return it.base()->getVal();
-			}
-			else
+			iterator it = find(key);
+			if (it == end())
 				throw std::out_of_range("Map : ");
+			return it->second;
 		}
 
 		const T &at(const key_type &key) const
 		{
-			if (count(key))
-			{
-				iterator it = find(key);
-				return it.base().getVal();
-			}
-			else
+			const_iterator it = find(key);
+			if (it == end())
 				throw std::out_of_range("Map : ");
+			return it->second;
 		}
 
 		mapped_type &operator[](const key_type &k)
 		{
-			(*((this->insert(ft::make_pair(k, mapped_type()))).first));
-			return find(k)->second;
+			iterator it = find(k);
+			if (it == end())
+				it = insert(ft::make_pair(k, mapped_type())).first;
+			return it->second;
 		}
 
 		//
@@ -403,17 +213,9 @@ namespace ft
 
 		void swap(map &x)
 		{
-			bt_node *tmp_root = root;
-			Compare tmp_cmp = _comp;
-			allocator_type tmp_alloc = _alloc;
-
-			root = x.root;
-			_comp = x._comp;
-			_alloc = x._alloc;
-
-			x.root = tmp_root;
-			x._comp = tmp_cmp;
-			x._alloc = tmp_alloc;
+			std::swap(root, x.root);
+			std::swap(_comp, x._comp);
+			std::swap(_alloc, x._alloc);
 		}
 
 		//
@@ -422,8 +224,7 @@ namespace ft
 		ft::pair<iterator, bool> insert(const value_type &val)
 		{
 			iterator ite = find(val.first);
-
-			if (count(val.first))
+			if (ite != end())
 				return ft::make_pair(ite, false);
 			else
 				return ft::make_pair(iterator(insert_node(val)), true);
@@ -442,18 +243,6 @@ namespace ft
 				insert(*first++);
 		}
 
-		void transplant(bt_node *oldNode, bt_node *newNode)
-		{
-			if (!oldNode->parent)
-				root = newNode;
-			else if (oldNode == oldNode->parent->left)
-				oldNode->parent->left = newNode;
-			else
-				oldNode->parent->right = newNode;
-			if (newNode)
-				newNode->parent = oldNode->parent;
-		}
-
 		//
 		// Modifiers Erase
 		//
@@ -465,9 +254,10 @@ namespace ft
 
 		size_type erase(const key_type &k)
 		{
-			if (count(k))
+			iterator it = find(k);
+			if (it != end())
 			{
-				erase(find(k));
+				erase(it);
 				return 1;
 			}
 			return 0;
@@ -476,7 +266,7 @@ namespace ft
 		void erase(iterator first, iterator last)
 		{
 			while (first != last)
-				erase((first++).base());
+				erase(first++);
 		}
 
 		//
@@ -484,26 +274,17 @@ namespace ft
 		//
 		iterator find(const key_type &k)
 		{
-			if (count(k))
-				return iterator(find_node(k));
-			return end();
+			return iterator(find_node(k));
 		}
 
 		const_iterator find(const key_type &k) const
 		{
-			bt_node *f = find_node(k);
-			if (f)
-				return const_iterator(f);
-			return end();
+			return const_iterator(find_node(k));
 		}
 
 		size_type count(const key_type &k) const
 		{
-			size_type n = 0;
-
-			if (find(k) == end())
-				return n;
-			return n + 1;
+			return find(k) != end() ? 1 : 0;
 		}
 
 		ft::pair<iterator, iterator> equal_range(const Key &key)
@@ -545,7 +326,7 @@ namespace ft
 			iterator it = begin();
 			while (it != end())
 			{
-				if ((_comp(key, it->first)))
+				if (_comp(key, it->first))
 					return it;
 				it++;
 			}
@@ -557,7 +338,7 @@ namespace ft
 			const_iterator it = begin();
 			while (it != end())
 			{
-				if ((_comp(key, it->first)))
+				if (_comp(key, it->first))
 					return it;
 				it++;
 			}
@@ -577,17 +358,10 @@ namespace ft
 			return value_compare(_comp);
 		}
 
-		// ! For test
-		// void test() {
-		// 	print2D(root);
-		// 	std::cout << "\n";
-		// 	std::cout << "\n";
-		// }
-
 	private:
 		bool equal(const key_type &lhs, const key_type &rhs) const
 		{
-			return (this->_comp(lhs, rhs) == false && this->_comp(rhs, lhs) == false);
+			return !_comp(lhs, rhs) && !_comp(rhs, lhs);
 		}
 
 		bt_node *new_node(const value_type &val)
@@ -683,6 +457,18 @@ namespace ft
 			_alloc.deallocate(ptr, 1);
 		}
 
+		void transplant(bt_node *oldNode, bt_node *newNode)
+		{
+			if (!oldNode->parent)
+				root = newNode;
+			else if (oldNode == oldNode->parent->left)
+				oldNode->parent->left = newNode;
+			else
+				oldNode->parent->right = newNode;
+			if (newNode)
+				newNode->parent = oldNode->parent;
+		}
+
 		size_type count_node() const
 		{
 			size_type n = 0;
@@ -726,27 +512,6 @@ namespace ft
 			allocate.deallocate(ptr, 1);
 			ptr = NULL;
 		}
-
-		// ! for test ==========
-		// #define COUNT 10
-
-		// void print2DUtil(bt_node *root, int space)
-		// {
-		// 	if (root == NULL)
-		// 		return;
-		// 	space += COUNT;
-		// 	print2DUtil(root->right, space);
-		// 	std::cout << std::endl;
-		// 	for (int i = COUNT; i < space; i++)
-		// 		std::cout<<" ";
-		// 	std::cout << root->getKey();
-		// 	print2DUtil(root->left, space);
-		// }
-
-		// void print2D(bt_node *root)
-		// {
-		// 	print2DUtil(root, 0);
-		// }
 	};
 
 	//
