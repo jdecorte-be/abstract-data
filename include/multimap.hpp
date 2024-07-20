@@ -7,613 +7,425 @@
 #include "exception.hpp"
 #include "type_traits.hpp"
 #include "string.hpp"
+#include "tree.hpp"
 
 namespace ft
 {
 
-    template <class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<ft::pair<const Key, T> > >
-    class multimap
-    {
-    public:
-        //
-        // Node
-        //
-        struct bt_node
-        {
-            bt_node *left;
-            bt_node *right;
-            bt_node *parent;
+	template <class Key, class T, class Compare = ft::less<Key>, class Alloc = std::allocator<ft::pair<const Key, T> > >
+	class multimap
+	{
 
-            ft::pair<const Key, T> data;
-
-            bt_node(ft::pair<const Key, T> data) : data(data) {}
-            const Key &getKey() { return data.first; }
-            T &getVal() { return data.second; }
-        };
-
-
-        //
-        // Member types
-        //
-    public:
-        typedef Key key_type;
-        typedef T mapped_type;
-        typedef ft::pair<const key_type, mapped_type> value_type;
-        typedef Compare key_compare;
-
-        //
-        // Value comp (nested class)
-        //
-        class value_compare
-        {
-            friend class multimap;
-
-        protected:
-            key_compare comp;
-            value_compare(key_compare c) : comp(c) {}
-
-        public:
-            typedef value_type first_arg;
-            typedef value_type second_arg;
-            bool operator()(const first_arg &x, const second_arg &y) const { return comp(x.first, y.first); }
-        };
-
-        typedef typename Alloc::template rebind<bt_node>::other allocator_type;
-        typedef typename Alloc::reference reference;
-        typedef typename Alloc::const_reference const_reference;
-        typedef typename Alloc::pointer pointer;
-        typedef typename Alloc::const_pointer const_pointer;
-		typedef ft::map_iterator<Key, T, bt_node> iterator;
-		typedef ft::map_iterator<Key, T, const bt_node> const_iterator;
-        typedef ft::reverse_iterator<iterator> reverse_iterator;
-        typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
+	public:
+		//
+		// Member types
+		//
+		typedef Key key_type;
+		typedef T mapped_type;
+		typedef ft::pair<const key_type, mapped_type> value_type;
+		typedef Compare key_compare;
+		typedef typename Alloc::template rebind<bt_node<value_type> >::other allocator_type;
+		typedef typename allocator_type::reference reference;
+		typedef typename allocator_type::const_reference const_reference;
+		typedef typename allocator_type::pointer pointer;
+		typedef typename allocator_type::const_pointer const_pointer;
+		typedef ft::map_iterator<Key, T, bt_node<value_type> > iterator;
+		typedef ft::map_iterator<Key, T, const bt_node<value_type> > const_iterator;
+		typedef ft::reverse_iterator<iterator> reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 		typedef typename iterator::difference_type difference_type;
 		typedef typename iterator::size_type size_type;
 
-    private:
-        bt_node *root;
-        allocator_type _alloc;
-        key_compare _comp;
+		//
+		// Value comp (nested class)
+		//
+		class value_compare
+		{
+			friend class multimap;
 
-    public:
-        //
-        // Constructor
-        //
-        explicit multimap(const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type())
-            : root(NULL), _alloc(alloc), _comp(comp)
-        {
-        }
+		protected:
+			key_compare comp;
+			value_compare(key_compare c) : comp(c) {}
 
-        template <class InputIt>
-        multimap(InputIt first, InputIt last, const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type())
-            : root(NULL), _alloc(alloc), _comp(comp)
-        {
-            insert(first, last);
-        }
+		public:
+			typedef value_type first_argument_type;
+			typedef value_type second_argument_type;
+			bool operator()(const first_argument_type &x, const second_argument_type &y) const { return comp(x.first, y.first); }
+		};
 
-        multimap(const multimap &other) : root(NULL), _alloc(other._alloc), _comp(other._comp)
-        {
-            clear();
-            insert(other.begin(), other.end());
-        }
+	private:
+		RedBlackTree<value_type, Compare, allocator_type> tree;
 
-        ~multimap() { clear(); }
+	public:
+		//
+		// Constructor
+		//
+		explicit multimap(const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type())
+			: tree(comp, alloc) {}
 
-        multimap &operator=(const multimap &other)
-        {
-            if (this == &other)
-                return *this;
-            clear();
-            insert(other.begin(), other.end());
-            _comp = other._comp;
-            _alloc = other._alloc;
-            return *this;
-        }
+		template <class InputIt>
+		multimap(InputIt first, InputIt last, const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type())
+			: tree(comp, alloc)
+		{
+			insert(first, last);
+		}
 
-        //
-        // Iterators
-        //
-        iterator begin()
-        {
-            return iterator(left_most(root));
-        }
+		multimap(const multimap &other) : tree(other.tree._comp, other.tree._alloc)
+		{
+			clear();
+			insert(other.begin(), other.end());
+		}
 
-        const_iterator begin() const
-        {
-            return const_iterator(left_most(root));
-        }
+		~multimap() { clear(); }
 
-        iterator end()
-        {
-            return iterator(NULL, right_most(root));
-        }
+		multimap &operator=(const multimap &other)
+		{
+			if (this == &other)
+				return *this;
+			clear();
+			insert(other.begin(), other.end());
+			tree._comp = other.tree._comp;
+			tree._alloc = other.tree._alloc;
+			return *this;
+		}
 
-        const_iterator end() const
-        {
-            return const_iterator(NULL, right_most(root));
-        }
+		//
+		// Iterators
+		//
+		iterator begin()
+		{
+			return iterator(tree.left_most(tree.root));
+		}
 
-        //
-        // Reverse Iterators
-        //
-        reverse_iterator rbegin()
-        {
-            return reverse_iterator(end());
-        }
+		const_iterator begin() const
+		{
+			return const_iterator(tree.left_most(tree.root));
+		}
 
-        const_reverse_iterator rbegin() const
-        {
-            return const_reverse_iterator(end());
-        }
+		iterator end()
+		{
+			return iterator(NULL, tree.right_most(tree.root));
+		}
 
-        reverse_iterator rend()
-        {
-            return reverse_iterator(begin());
-        }
+		const_iterator end() const
+		{
+			return const_iterator(NULL, tree.right_most(tree.root));
+		}
 
-        const_reverse_iterator rend() const
-        {
-            return const_reverse_iterator(begin());
-        }
+		//
+		// Reverse Iterators
+		//
+		reverse_iterator rbegin()
+		{
+			return reverse_iterator(end());
+		}
 
-        //
-        // Capacity
-        //
-        bool empty() const
-        {
-            return begin() == end();
-        }
+		const_reverse_iterator rbegin() const
+		{
+			return const_reverse_iterator(end());
+		}
 
-        size_type size() const
-        {
-            return count_node();
-        }
+		reverse_iterator rend()
+		{
+			return reverse_iterator(begin());
+		}
 
-        size_type max_size() const
-        {
-            return _alloc.max_size();
-        }
+		const_reverse_iterator rend() const
+		{
+			return const_reverse_iterator(begin());
+		}
 
-        //
-        // Element access
-        //
-        T &at(const key_type &key)
-        {
-            if (count(key))
-            {
-                iterator it = find(key);
-                return it.base()->getVal();
-            }
-            else
-                throw std::out_of_range("multimap : ");
-        }
+		//
+		// Capacity
+		//
+		bool empty() const
+		{
+			return begin() == end();
+		}
 
-        const T &at(const key_type &key) const
-        {
-            if (count(key))
-            {
-                iterator it = find(key);
-                return it.base().getVal();
-            }
-            else
-                throw std::out_of_range("multimap : ");
-        }
+		size_type size() const
+		{
+			size_type n = 0;
+			for (const_iterator it = begin(); it != end(); ++it)
+				n++;
+			return n;
+		}
 
-        mapped_type &operator[](const key_type &k)
-        {
-            (*((this->insert(ft::make_pair(k, mapped_type()))).first));
-            return find(k)->second;
-        }
+		size_type max_size() const
+		{
+			return tree._alloc.max_size();
+		}
 
-        //
-        // Modifiers
-        //
-        void clear()
-        {
-            if (root)
-            {
-                delete_tree(root);
-                root = NULL;
-            }
-        }
+		//
+		// Element access
+		//
+		mapped_type &at(const key_type &key)
+		{
+			iterator it = find(key);
+			if (it == end())
+				throw std::out_of_range("multimap : ");
+			return it->second;
+		}
 
-        void swap(multimap &x)
-        {
-            bt_node *tmp_root = root;
-            Compare tmp_cmp = _comp;
-            allocator_type tmp_alloc = _alloc;
+		const mapped_type &at(const key_type &key) const
+		{
+			const_iterator it = find(key);
+			if (it == end())
+				throw std::out_of_range("multimap : ");
+			return it->second;
+		}
 
-            root = x.root;
-            _comp = x._comp;
-            _alloc = x._alloc;
+		mapped_type &operator[](const key_type &k)
+		{
+			iterator it = find(k);
+			if (it == end())
+				it = insert(ft::make_pair(k, mapped_type())).first;
+			return it->second;
+		}
 
-            x.root = tmp_root;
-            x._comp = tmp_cmp;
-            x._alloc = tmp_alloc;
-        }
+		//
+		// Modifiers
+		//
+		void clear()
+		{
+			if (tree.root)
+			{
+				delete_tree(tree.root);
+				tree.root = NULL;
+			}
+		}
 
-        //
-        // Modifiers Insert
-        //
-        iterator insert(const value_type &val)
-        {
-            return iterator(insert_node(val));
-        }
+		void swap(multimap &x)
+		{
+			ft::swap(tree.root, x.tree.root);
+			ft::swap(tree._comp, x.tree._comp);
+			ft::swap(tree._alloc, x.tree._alloc);
+		}
 
-        iterator insert(iterator position, const value_type &val)
-        {
-            (void)position;
-            return insert(val);
-        }
+		//
+		// Modifiers Insert
+		//
+		iterator insert(const value_type &val)
+		{
+			return iterator(tree.insert_node(val));
+		}
 
-        template <class InputIterator>
-        void insert(InputIterator first, InputIterator last)
-        {
-            while (first != last)
-                insert(*first++);
-        }
+		iterator insert(iterator position, const value_type &val)
+		{
+			(void)position;
+			return insert(val).first;
+		}
 
-        void transplant(bt_node *oldNode, bt_node *newNode)
-        {
-            if (!oldNode->parent)
-                root = newNode;
-            else if (oldNode == oldNode->parent->left)
-                oldNode->parent->left = newNode;
-            else
-                oldNode->parent->right = newNode;
-            if (newNode)
-                newNode->parent = oldNode->parent;
-        }
+		template <class InputIterator>
+		void insert(InputIterator first, InputIterator last)
+		{
+			while (first != last)
+				insert(*first++);
+		}
 
-        //
-        // Modifiers Erase
-        //
-        void erase(iterator pos)
-        {
-            if (pos != end())
-                delete_node(pos.base());
-        }
+		//
+		// Modifiers Erase
+		//
+		void erase(iterator pos)
+		{
+			if (pos != end())
+				tree.delete_node(pos.base());
+		}
 
-        size_type erase(const key_type &k)
-        {
-            size_type count = 0;
-            iterator it = find(k);
-            while (it != end() && it->first == k)
-            {
-                erase(it++);
-                count++;
-            }
-            return count;
-        }
+		size_type erase(const key_type &k)
+		{
+			iterator it = find(k);
+			if (it != end())
+			{
+				erase(it++);
+				return 1;
+			}
+			return 0;
+		}
 
-        void erase(iterator first, iterator last)
-        {
-            while (first != last)
-                erase((first++).base());
-        }
+		void erase(iterator first, iterator last)
+		{
+			while (first != last)
+				erase(first++);
+		}
 
-        //
-        // Lookup
-        //
-        iterator find(const key_type &k)
-        {
-            return iterator(find_node(k));
-        }
+		//
+		// Lookup
+		//
+		iterator find(const key_type &k)
+		{
+			return iterator(find_node(k));
+		}
 
-        const_iterator find(const key_type &k) const
-        {
-            bt_node *f = find_node(k);
-            if (f)
-                return const_iterator(f);
-            return end();
-        }
+		const_iterator find(const key_type &k) const
+		{
+			return const_iterator(find_node(k));
+		}
 
-        size_type count(const key_type &k) const
-        {
-            size_type n = 0;
-            iterator it = find(k);
-            while (it != end() && it->first == k)
-            {
-                n++;
-                it++;
-            }
-            return n;
-        }
+		size_type count(const key_type &k) const
+		{
+			return find(k) != end();
+		}
 
-        ft::pair<iterator, iterator> equal_range(const Key &key)
-        {
-            return ft::pair<iterator, iterator>(lower_bound(key), upper_bound(key));
-        }
+		ft::pair<iterator, iterator> equal_range(const key_type &key)
+		{
+			return ft::pair<iterator, iterator>(lower_bound(key), upper_bound(key));
+		}
 
-        ft::pair<const_iterator, const_iterator> equal_range(const Key &key) const
-        {
-            return ft::pair<const_iterator, const_iterator>(lower_bound(key), upper_bound(key));
-        }
+		ft::pair<const_iterator, const_iterator> equal_range(const key_type &key) const
+		{
+			return ft::pair<const_iterator, const_iterator>(lower_bound(key), upper_bound(key));
+		}
 
-        iterator lower_bound(const Key &key)
-        {
-            iterator it = begin();
-            while (it != end())
-            {
-                if (!(_comp(it->first, key)))
-                    return it;
-                it++;
-            }
-            return it;
-        }
+		iterator lower_bound(const key_type &key)
+		{
+			iterator it = begin();
+			while (it != end())
+			{
+				if (!tree._comp(it->first, key))
+					return it;
+				it++;
+			}
+			return it;
+		}
 
-        const_iterator lower_bound(const Key &key) const
-        {
-            const_iterator it = begin();
-            while (it != end())
-            {
-                if (!(_comp(it->first, key)))
-                    return it;
-                it++;
-            }
-            return it;
-        }
+		const_iterator lower_bound(const key_type &key) const
+		{
+			const_iterator it = begin();
+			while (it != end())
+			{
+				if (!tree._comp(it->first, key))
+					return it;
+				it++;
+			}
+			return it;
+		}
 
-        iterator upper_bound(const Key &key)
-        {
-            iterator it = begin();
-            while (it != end())
-            {
-                if ((_comp(key, it->first)))
-                    return it;
-                it++;
-            }
-            return it;
-        }
+		iterator upper_bound(const key_type &key)
+		{
+			iterator it = begin();
+			while (it != end())
+			{
+				if (tree._comp(key, it->first))
+					return it;
+				it++;
+			}
+			return it;
+		}
 
-        const_iterator upper_bound(const Key &key) const
-        {
-            const_iterator it = begin();
-            while (it != end())
-            {
-                if ((_comp(key, it->first)))
-                    return it;
-                it++;
-            }
-            return it;
-        }
+		const_iterator upper_bound(const key_type &key) const
+		{
+			const_iterator it = begin();
+			while (it != end())
+			{
+				if (tree._comp(key, it->first))
+					return it;
+				it++;
+			}
+			return it;
+		}
 
-        //
-        // Observers
-        //
-        key_compare key_comp() const
-        {
-            return _comp;
-        }
+		//
+		// Observers
+		//
+		key_compare key_comp() const
+		{
+			return tree._comp;
+		}
 
-        value_compare value_comp() const
-        {
-            return value_compare(_comp);
-        }
+		value_compare value_comp() const
+		{
+			return value_compare(tree._comp);
+		}
 
-        // ! For test
-        // void test() {
-        //  print2D(root);
-        //  std::cout << "\n";
-        //  std::cout << "\n";
-        // }
+	private:
+		bt_node<value_type> *find_node(const key_type &key) const
+		{
+			return find_node(tree.root, key);
+		}
 
-    private:
-        bool equal(const key_type &lhs, const key_type &rhs) const
-        {
-            return (this->_comp(lhs, rhs) == false && this->_comp(rhs, lhs) == false);
-        }
+		bt_node<value_type> *find_node(bt_node<value_type> *r, const key_type &key) const
+		{
+			if (!r || equal(r->data.first, key))
+				return r;
+			else if (tree._comp(key, r->data.first))
+				return find_node(r->left, key);
+			return find_node(r->right, key);
+		}
 
-        bt_node *new_node(const value_type &val)
-        {
-            bt_node *newnode = _alloc.allocate(1);
-            _alloc.construct(newnode, val);
-            return newnode;
-        }
+		bool equal(const key_type &lhs, const key_type &rhs) const
+		{
+			return !tree._comp(lhs, rhs) && !tree._comp(rhs, lhs);
+		}
 
-        bt_node *insert_node(const value_type &val)
-        {
-            bt_node *newnode = new_node(val);
+		void delete_tree(bt_node<value_type> *ptr)
+		{
+			if (ptr->left)
+				delete_tree(ptr->left);
+			if (ptr->right)
+				delete_tree(ptr->right);
+			tree._alloc.destroy(ptr);
+			tree._alloc.deallocate(ptr, 1);
+		}
+	};
 
-            if (root == NULL)
-                root = newnode;
-            else
-            {
-                bt_node *r = root;
-                while (r)
-                {
-                    if (_comp(r->getKey(), val.first))
-                    {
-                        if (!r->right)
-                        {
-                            r->right = newnode;
-                            break;
-                        }
-                        r = r->right;
-                    }
-                    else
-                    {
-                        if (!r->left)
-                        {
-                            r->left = newnode;
-                            break;
-                        }
-                        r = r->left;
-                    }
-                }
-                newnode->parent = r;
-            }
-            return newnode;
-        }
+	//
+	// Non-member functions (operators)
+	//
+	template <class Key, class T, class Compare, class Alloc>
+	bool operator==(const ft::multimap<Key, T, Compare, Alloc> &lhs, const ft::multimap<Key, T, Compare, Alloc> &rhs)
+	{
+		if (lhs.size() == rhs.size())
+		{
+			typename ft::multimap<Key, T, Compare, Alloc>::const_iterator ite_lhs = lhs.begin();
+			typename ft::multimap<Key, T, Compare, Alloc>::const_iterator ite_rhs = rhs.begin();
+			while (ite_lhs != lhs.end())
+			{
+				if (ite_lhs->first != ite_rhs->first || ite_lhs->second != ite_rhs->second)
+					return false;
+				ite_lhs++, ite_rhs++;
+			}
+			return true;
+		}
+		return false;
+	}
 
-        bt_node *find_node(const Key &key) const
-        {
-            return find_node(root, key);
-        }
+	template <class Key, class T, class Compare, class Alloc>
+	bool operator!=(const ft::multimap<Key, T, Compare, Alloc> &lhs, const ft::multimap<Key, T, Compare, Alloc> &rhs)
+	{
+		return !(lhs == rhs);
+	}
 
-        bt_node *find_node(bt_node *r, const Key &key) const
-        {
-            if (!r || equal(r->getKey(), key))
-                return r;
-            if (_comp(key, r->getKey()))
-                return find_node(r->left, key);
-            return find_node(r->right, key);
-        }
+	template <class Key, class T, class Compare, class Alloc>
+	bool operator<(const ft::multimap<Key, T, Compare, Alloc> &lhs, const ft::multimap<Key, T, Compare, Alloc> &rhs)
+	{
+		return lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+	}
 
-        void delete_node(bt_node *ptr)
-        {
-            bt_node *tmp = ptr;
-            bt_node *x = NULL;
+	template <class Key, class T, class Compare, class Alloc>
+	bool operator<=(const ft::multimap<Key, T, Compare, Alloc> &lhs, const ft::multimap<Key, T, Compare, Alloc> &rhs)
+	{
+		return !(lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
+	}
 
-            if (!ptr->left)
-            {
-                x = ptr->right;
-                transplant(ptr, ptr->right);
-            }
-            else if (!ptr->right)
-            {
-                x = ptr->left;
-                transplant(ptr, ptr->left);
-            }
-            else if (ptr->right && ptr->left)
-            {
-                tmp = left_most(ptr->right);
-                x = tmp->right;
-                if (tmp->parent == ptr && x)
-                    x->parent = tmp;
-                else
-                {
-                    transplant(tmp, tmp->right);
-                    tmp->right = ptr->right;
-                    if (tmp->right)
-                        tmp->right->parent = tmp;
-                }
-                transplant(ptr, tmp);
-                tmp->left = ptr->left;
-                if (tmp->left)
-                    tmp->left->parent = tmp;
-            }
-            _alloc.destroy(ptr);
-            _alloc.deallocate(ptr, 1);
-        }
+	template <class Key, class T, class Compare, class Alloc>
+	bool operator>(const ft::multimap<Key, T, Compare, Alloc> &lhs, const ft::multimap<Key, T, Compare, Alloc> &rhs)
+	{
+		return lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end());
+	}
 
-        size_type count_node() const
-        {
-            size_type n = 0;
-            for (const_iterator it = begin(); it != end(); it++)
-                n++;
-            return n;
-        }
+	template <class Key, class T, class Compare, class Alloc>
+	bool operator>=(const ft::multimap<Key, T, Compare, Alloc> &lhs, const ft::multimap<Key, T, Compare, Alloc> &rhs)
+	{
+		return !(lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+	}
 
-        bt_node *left_most(bt_node *root) const
-        {
-            bt_node *r = root;
-            if (!r)
-                return NULL;
-            if (!r->left)
-                return r;
-            while (r && r->left)
-                r = r->left;
-            return r;
-        }
+	template <class Key, class T, class Compare, class Alloc>
+	void swap(ft::multimap<Key, T, Compare, Alloc> &lhs, ft::multimap<Key, T, Compare, Alloc> &rhs)
+	{
+		lhs.swap(rhs);
+	}
 
-        bt_node *right_most(bt_node *root) const
-        {
-            bt_node *r = root;
-            if (!r)
-                return NULL;
-            if (!r->right)
-                return r;
-            while (r->right)
-                r = r->right;
-            return r;
-        }
-
-        void delete_tree(bt_node *ptr)
-        {
-            std::allocator<bt_node> allocate;
-            if (ptr->left)
-                delete_tree(ptr->left);
-            if (ptr->right)
-                delete_tree(ptr->right);
-            allocate.destroy(ptr);
-            allocate.deallocate(ptr, 1);
-            ptr = NULL;
-        }
-
-        // ! for test ==========
-        // #define COUNT 10
-
-        // void print2DUtil(bt_node *root, int space)
-        // {
-        //  if (root == NULL)
-        //      return;
-        //  space += COUNT;
-        //  print2DUtil(root->right, space);
-        //  std::cout << std::endl;
-        //  for (int i = COUNT; i < space; i++)
-        //      std::cout<<" ";
-        //  std::cout << root->getKey();
-        //  print2DUtil(root->left, space);
-        // }
-
-        // void print2D(bt_node *root)
-        // {
-        //  print2DUtil(root, 0);
-        // }
-    };
-
-    //
-    // Non-member functions (operators)
-    //
-    template <class Key, class T, class Compare, class Alloc>
-    bool operator==(const ft::multimap<Key, T, Compare, Alloc> &lhs, const ft::multimap<Key, T, Compare, Alloc> &rhs)
-    {
-        if (lhs.size() == rhs.size())
-        {
-            typename ft::multimap<Key, T, Compare, Alloc>::const_iterator ite_lhs = lhs.begin();
-            typename ft::multimap<Key, T, Compare, Alloc>::const_iterator ite_rhs = rhs.begin();
-            while (ite_lhs != lhs.end())
-            {
-                if (ite_lhs->first != ite_rhs->first || ite_lhs->second != ite_rhs->second)
-                    return false;
-                ite_lhs++, ite_rhs++;
-            }
-            return true;
-        }
-        return false;
-    }
-    template <class Key, class T, class Compare, class Alloc>
-    bool operator!=(const ft::multimap<Key, T, Compare, Alloc> &lhs, const ft::multimap<Key, T, Compare, Alloc> &rhs)
-    {
-        return !(lhs == rhs);
-    }
-    template <class Key, class T, class Compare, class Alloc>
-    bool operator<(const ft::multimap<Key, T, Compare, Alloc> &lhs, const ft::multimap<Key, T, Compare, Alloc> &rhs)
-    {
-        return lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
-    }
-    template <class Key, class T, class Compare, class Alloc>
-    bool operator<=(const ft::multimap<Key, T, Compare, Alloc> &lhs, const ft::multimap<Key, T, Compare, Alloc> &rhs)
-    {
-        return !(lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
-    }
-    template <class Key, class T, class Compare, class Alloc>
-    bool operator>(const ft::multimap<Key, T, Compare, Alloc> &lhs, const ft::multimap<Key, T, Compare, Alloc> &rhs)
-    {
-        return lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end());
-    }
-    template <class Key, class T, class Compare, class Alloc>
-    bool operator>=(const ft::multimap<Key, T, Compare, Alloc> &lhs, const ft::multimap<Key, T, Compare, Alloc> &rhs)
-    {
-        return !(lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
-    }
-    template <class Key, class T, class Compare, class Alloc>
-    void swap(ft::multimap<Key, T, Compare, Alloc> &lhs, ft::multimap<Key, T, Compare, Alloc> &rhs)
-    {
-        lhs.swap(rhs);
-    }
-
-}
+} // namespace ft
 
 #endif

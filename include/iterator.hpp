@@ -211,7 +211,6 @@ namespace ft
         template <class OtherNode>
         map_iterator(const map_iterator<Key, T, OtherNode> &src) : ptr(src.ptr), _end(src._end) {}
 
-
         //
         // Operators
         //
@@ -351,6 +350,201 @@ namespace ft
         }
     };
 
+    // * Set iterator =================================================================================================
+
+    template <class T, class Node>
+    class set_iterator
+    {
+    public:
+        typedef T value_type;
+        typedef std::bidirectional_iterator_tag iterator_category;
+        typedef ft::ptrdiff_t difference_type;
+        typedef ft::size_t size_type;
+
+        typedef typename ft::conditional<ft::is_const<Node>::value, const value_type &, value_type &>::type reference;
+        typedef typename ft::conditional<ft::is_const<Node>::value, const value_type *, value_type *>::type pointer;
+
+    private:
+        Node *ptr;
+        Node *_end;
+
+    public:
+        //
+        // Constructor
+        //
+        set_iterator() : ptr(NULL), _end(NULL) {}
+
+        set_iterator(Node *ptr) : ptr(ptr), _end(NULL) {}
+
+        set_iterator(Node *ptr, Node *end) : ptr(ptr), _end(end) {}
+
+        set_iterator(const set_iterator &src) : ptr(src.ptr), _end(src._end) {}
+
+        template <class OtherNode>
+        set_iterator(const set_iterator<T, OtherNode> &src)
+            : ptr(const_cast<Node *>(src.base())), _end(const_cast<Node *>(src.end_base())) {}
+
+        set_iterator &operator=(const set_iterator &src)
+        {
+            ptr = src.ptr;
+            _end = src._end;
+            return *this;
+        }
+
+        //
+        // Const casting
+        //
+        template <class OtherNode>
+        set_iterator &operator=(const set_iterator<T, OtherNode> &src)
+        {
+            ptr = const_cast<Node *>(src.base());
+            _end = const_cast<Node *>(src.end_base());
+            return *this;
+        }
+
+        //
+        // Operators
+        //
+        Node *base() const
+        {
+            return ptr;
+        }
+
+        Node *end_base() const
+        {
+            return _end;
+        }
+
+        set_iterator &operator++()
+        {
+            if (this->ptr == NULL)
+                return *this;
+            else if (!this->ptr->parent && !this->ptr->right)
+            {
+                this->_end = this->ptr;
+                this->ptr = NULL;
+            }
+            else if (this->ptr->right)
+                this->ptr = down_bigger_node();
+            else
+                this->ptr = up_bigger_node(this->ptr);
+            return *this;
+        }
+
+        set_iterator operator++(int)
+        {
+            set_iterator<T, Node> tmp = *this;
+            this->operator++();
+            return tmp;
+        }
+
+        set_iterator &operator--()
+        {
+            if (this->ptr == NULL)
+            {
+                if (_end)
+                    ptr = _end;
+            }
+            else if (!ptr->parent && !ptr->left)
+                ptr = NULL;
+            else if (ptr->left)
+                ptr = down_smallest_node();
+            else
+                ptr = up_smallest_node(ptr);
+            return *this;
+        }
+
+        set_iterator operator--(int)
+        {
+            set_iterator<T, Node> tmp = *this;
+            this->operator--();
+            return tmp;
+        }
+
+        reference operator*() const
+        {
+            return ptr->data;
+        }
+
+        pointer operator->() const
+        {
+            return &(ptr->data);
+        }
+
+        template <class OtherNode>
+        bool operator==(const set_iterator<T, OtherNode> &tocomp) const
+        {
+            return ptr == tocomp.base();
+        }
+
+        template <class OtherNode>
+        bool operator!=(const set_iterator<T, OtherNode> &tocomp) const
+        {
+            return ptr != tocomp.base();
+        }
+
+    private: // Private function like Next and Prev Node // Post order (root is end)
+        Node *up_bigger_node(Node *node)
+        {
+            Node *next;
+
+            if (!node->right)
+            {
+                next = node;
+                if (next->parent->right != next && next != next->parent->left)
+                    return (NULL);
+                while (next->parent != NULL && next == next->parent->right)
+                    next = next->parent;
+                next = next->parent;
+            }
+            else
+            {
+                next = node->right;
+                while (next->left)
+                    next = next->left;
+            }
+            return (next);
+        }
+
+        Node *down_bigger_node()
+        {
+            Node *tmp = this->ptr->right;
+
+            while (tmp->left)
+                tmp = tmp->left;
+            return tmp;
+        }
+
+        // Return next smallest
+        Node *down_smallest_node()
+        {
+            Node *tmp = this->ptr->left;
+
+            while (tmp->right)
+                tmp = tmp->right;
+            return tmp;
+        }
+
+        Node *up_smallest_node(Node *node)
+        {
+            Node *prev;
+
+            if (node->left == NULL || node->left == NULL)
+            {
+                prev = node;
+                while (prev->parent != NULL && prev == prev->parent->left)
+                    prev = prev->parent;
+                prev = prev->parent;
+            }
+            else
+            {
+                prev = node->left;
+                while (prev->right != NULL)
+                    prev = prev->right;
+            }
+            return (prev);
+        }
+    };
 }
 
 #endif

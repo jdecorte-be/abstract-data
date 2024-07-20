@@ -19,6 +19,15 @@ namespace ft
     {
         bool operator()(const T &x, const T &y) const { return x < y; }
     };
+
+    template <typename Key, typename Value>
+    struct less<ft::pair<Key, Value> >
+    {
+        bool operator()(const ft::pair<Key, Value> &lhs, const ft::pair<Key, Value> &rhs) const
+        {
+            return lhs.first < rhs.first;
+        }
+    };
 }
 
 #endif

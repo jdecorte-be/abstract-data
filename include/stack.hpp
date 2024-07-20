@@ -7,79 +7,70 @@
 #include "exception.hpp"
 #include "type_traits.hpp"
 #include "string.hpp"
-#include "cstddef.hpp"
 #include "vector.hpp"
 
 namespace ft
 {
 
-template <class T, class Container = ft::vector<T> >
-class stack
-{
-
-    protected :
-        Container c;
-
-    public :
+    template <class T, class Container = ft::vector<T> >
+    class stack
+    {
+    public:
         typedef Container container_type;
         typedef typename Container::value_type value_type;
         typedef typename Container::size_type size_type;
         typedef typename Container::reference reference;
         typedef typename Container::const_reference const_reference;
 
-        explicit stack (const container_type& ctnr = container_type()) : c(ctnr) {}
+        explicit stack(const container_type &ctnr = container_type()) : c(ctnr) {}
 
-        bool empty() const {
-            return c.empty();
-        }
+        bool empty() const { return c.empty(); }
 
-        size_type size() const {
-            return c.size();
-        }
+        size_type size() const { return c.size(); }
 
-        value_type& top() {
-            return c.back();
-        }
-        
-        const value_type& top() const {
-            return c.back();
-        }
+        reference top() { return c.back(); }
 
-        void push (const value_type& val) {
-            c.push_back(val);
-        }
+        const_reference top() const { return c.back(); }
 
-        void pop() {
-            c.pop_back();
-        }
+        void push(const value_type &val) { c.push_back(val); }
 
-        friend bool	operator==(const stack &lhs, const stack &rhs)
+        void pop() { c.pop_back(); }
+
+
+    protected:
+        container_type c;
+
+        friend bool operator==(const stack &lhs, const stack &rhs)
         {
             return lhs.c == rhs.c;
         }
-        friend bool	operator!=(const stack &lhs, const stack &rhs)
+
+        friend bool operator!=(const stack &lhs, const stack &rhs)
         {
             return !(lhs == rhs);
         }
-        friend bool	operator<(const stack &lhs, const stack &rhs)
+
+        friend bool operator<(const stack &lhs, const stack &rhs)
         {
             return lhs.c < rhs.c;
         }
-        friend bool	operator>(const stack &lhs, const stack &rhs)
+
+        friend bool operator>(const stack &lhs, const stack &rhs)
         {
             return rhs < lhs;
         }
-        friend bool	operator<=(const stack &lhs, const stack &rhs)
+
+        friend bool operator<=(const stack &lhs, const stack &rhs)
         {
             return !(lhs > rhs);
         }
-        friend bool	operator>=(const stack &lhs, const stack &rhs)
+
+        friend bool operator>=(const stack &lhs, const stack &rhs)
         {
             return !(lhs < rhs);
         }
+    };
 
-};
-
-}
+} // namespace ft
 
 #endif

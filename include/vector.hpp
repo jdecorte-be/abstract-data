@@ -48,6 +48,7 @@ namespace ft
             // -structors
             vectorIterator(void) { _ptr = NULL; }
             ~vectorIterator(void) {}
+
             // Const stuff
             template <bool B>
             vectorIterator(const vectorIterator<B> &x, typename ft::enable_if<!B>::type * = 0) { _ptr = x.getPtr(); }
@@ -395,15 +396,16 @@ void vector<T, Alloc>::reserve(size_type n)
     if (n > this->_cap)
     {
         pointer new_arr = this->_alloc.allocate(n);
-        for (size_type i = 0; i < this->_size; ++i)
+        for (size_type i = 0; i < this->_size && i < n; i++)
         {
             this->_alloc.construct(&new_arr[i], this->arr[i]);
             this->_alloc.destroy(&this->arr[i]);
         }
-        if (this->arr)
+        if(_cap)
             this->_alloc.deallocate(this->arr, this->_cap);
-        this->arr = new_arr;
+
         this->_cap = n;
+        this->arr = new_arr;
     }
 }
 
