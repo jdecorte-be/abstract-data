@@ -67,46 +67,51 @@ namespace ft
         RedBlackTree(const Compare &comp = Compare(), const allocator_type &alloc = allocator_type())
             : root(NULL), _alloc(alloc), _comp(comp) {}
 
-        node_type *insert_node(const T &val)
+
+
+node_type* insert_node(const T& val)
+{
+    node_type* newnode = new_node(val);
+    
+    if (root == NULL)
+    {
+        root = newnode;
+        root->color = false; // Root is always black
+        return root;
+    }
+
+    node_type* parent = NULL;
+    node_type* current = root;
+
+    // Ignore hint and always find the correct position
+    while (current != NULL)
+    {
+        parent = current;
+        if (_comp(getKey<T>()(val), getKey<T>()(current->data)))
+            current = current->left;
+        else if (_comp(getKey<T>()(current->data), getKey<T>()(val)))
+            current = current->right;
+        else
         {
-            node_type *newnode = new_node(val);
-            node_type *y = NULL;
-            node_type *x = root;
-
-            while (x != NULL)
-            {
-                y = x;
-                if (_comp(getKey<T>()(newnode->data), getKey<T>()(x->data)))
-                {
-                    x = x->left;
-                }
-                else
-                {
-                    x = x->right;
-                }
-            }
-
-            newnode->parent = y;
-            if (y == NULL)
-            {
-                root = newnode;
-            }
-            else if (_comp(getKey<T>()(newnode->data), getKey<T>()(y->data)))
-            {
-                y->left = newnode;
-            }
-            else
-            {
-                y->right = newnode;
-            }
-
-            newnode->left = NULL;
-            newnode->right = NULL;
-            newnode->color = true; // New node must be red
-
-            insert_fixup(newnode);
-            return newnode;
+            // Key already exists, don't insert
+            _alloc.destroy(newnode);
+            _alloc.deallocate(newnode, 1);
+            return current;
         }
+    }
+
+    // Insert new node
+    newnode->parent = parent;
+    if (_comp(getKey<T>()(val), getKey<T>()(parent->data)))
+        parent->left = newnode;
+    else
+        parent->right = newnode;
+
+    // Fix the tree
+    insert_fixup(newnode);
+
+    return newnode;
+}
 
         void delete_node(node_type *ptr)
         {

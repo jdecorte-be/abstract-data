@@ -287,6 +287,7 @@ namespace ft
             return ptr != tocomp.base();
         }
 
+
     private: // Private function like Next and Prev Node // Post order (root is end)
         Node *up_bigger_node(Node *node)
         {
@@ -361,8 +362,8 @@ namespace ft
         typedef ft::ptrdiff_t difference_type;
         typedef ft::size_t size_type;
 
-        typedef typename ft::conditional<ft::is_const<Node>::value, const value_type &, value_type &>::type reference;
-        typedef typename ft::conditional<ft::is_const<Node>::value, const value_type *, value_type *>::type pointer;
+        typedef const T &reference;
+        typedef const T *pointer;
 
     private:
         Node *ptr;
@@ -372,33 +373,27 @@ namespace ft
         //
         // Constructor
         //
-        set_iterator() : ptr(NULL), _end(NULL) {}
+        set_iterator() : ptr(nullptr), _end(nullptr) {}
 
-        set_iterator(Node *ptr) : ptr(ptr), _end(NULL) {}
+        set_iterator(Node *ptr, Node *end = nullptr) : ptr(ptr), _end(end) {}
 
-        set_iterator(Node *ptr, Node *end) : ptr(ptr), _end(end) {}
+        template <class U>
+        set_iterator(const set_iterator<T, U> &other,
+                     typename ft::enable_if<!ft::is_const<U>::value, U>::type * = 0)
+            : ptr(other.base()), _end(other.end_base()) {}
 
-        set_iterator(const set_iterator &src) : ptr(src.ptr), _end(src._end) {}
+        template <class U>
+        set_iterator(const set_iterator<const T, U> &other,
+                     typename ft::enable_if<ft::is_const<U>::value, U>::type * = 0)
+            : ptr(const_cast<Node *>(other.base())), _end(const_cast<Node *>(other.end_base())) {}
 
-        template <class OtherNode>
-        set_iterator(const set_iterator<T, OtherNode> &src)
-            : ptr(const_cast<Node *>(src.base())), _end(const_cast<Node *>(src.end_base())) {}
-
-        set_iterator &operator=(const set_iterator &src)
+        set_iterator &operator=(const set_iterator &other)
         {
-            ptr = src.ptr;
-            _end = src._end;
-            return *this;
-        }
-
-        //
-        // Const casting
-        //
-        template <class OtherNode>
-        set_iterator &operator=(const set_iterator<T, OtherNode> &src)
-        {
-            ptr = const_cast<Node *>(src.base());
-            _end = const_cast<Node *>(src.end_base());
+            if (this != &other)
+            {
+                this->ptr = other.ptr;
+                this->_end = other._end;
+            }
             return *this;
         }
 
@@ -468,7 +463,7 @@ namespace ft
 
         pointer operator->() const
         {
-            return &(ptr->data);
+            return &(operator*());
         }
 
         template <class OtherNode>
@@ -482,6 +477,11 @@ namespace ft
         {
             return ptr != tocomp.base();
         }
+        operator set_iterator<const T, const Node>() const
+        {
+            return set_iterator<const T, const Node>(ptr, _end);
+        }
+        
 
     private: // Private function like Next and Prev Node // Post order (root is end)
         Node *up_bigger_node(Node *node)
@@ -545,6 +545,18 @@ namespace ft
             return (prev);
         }
     };
+
+    template <class T1, class Node1, class T2, class Node2>
+    bool operator==(const set_iterator<T1, Node1> &lhs, const set_iterator<T2, Node2> &rhs)
+    {
+        return lhs.base() == rhs.base();
+    }
+
+    template <class T1, class Node1, class T2, class Node2>
+    bool operator!=(const set_iterator<T1, Node1> &lhs, const set_iterator<T2, Node2> &rhs)
+    {
+        return lhs.base() != rhs.base();
+    }
 }
 
 #endif
