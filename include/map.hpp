@@ -71,32 +71,32 @@ namespace ft
 			insert(first, last);
 		}
 
-	map(const map& other) : tree(other.tree._comp, other.tree._alloc)
-	{
-		try
+		map(const map &other) : tree(other.tree._comp, other.tree._alloc)
 		{
-			// Clear any existing elements (should be empty, but just in case)
-			clear();
-			
-			// Copy all elements from the other map
-			const_iterator it = other.begin();
-			const_iterator ite = other.end();
-			for (; it != ite; ++it)
+			try
 			{
-				insert(*it);
+				// Clear any existing elements (should be empty, but just in case)
+				clear();
+
+				// Copy all elements from the other map
+				const_iterator it = other.begin();
+				const_iterator ite = other.end();
+				for (; it != ite; ++it)
+				{
+					insert(*it);
+				}
+			}
+			catch (...)
+			{
+				// If an exception occurs, ensure we clean up
+				clear();
+				throw;
 			}
 		}
-		catch (...)
-		{
-			// If an exception occurs, ensure we clean up
-			clear();
-			throw;
-		}
-	}
 
 		~map() { clear(); }
 
-		map& operator=(const map& other)
+		map &operator=(const map &other)
 		{
 			if (this != &other)
 			{
@@ -232,15 +232,20 @@ namespace ft
 
 		iterator insert(iterator hint, const value_type &val)
 		{
-			(void)hint;
+			if(hint != end() && tree._comp(hint->first, val.first))
+				return tree.insert_node(hint.base(), val);
 			return insert(val).first;
 		}
 
 		template <class InputIterator>
 		void insert(InputIterator first, InputIterator last)
 		{
-			for(InputIterator it = first; it != last; ++it)
-				insert(*it);
+			for (InputIterator it = first; it != last; ++it)
+			{
+        		iterator ite = find(it->first);
+				if(ite == end())
+					tree.insert_node(*it);
+			}
 		}
 
 		//
@@ -265,8 +270,11 @@ namespace ft
 
 		void erase(iterator first, iterator last)
 		{
+			// if (!(first == last || (first != end() && last != end())))
+        		// return;
+
 			while (first != last)
-				erase(first++);
+				tree.delete_node((first++).base());
 		}
 
 		//
@@ -446,8 +454,7 @@ namespace ft
 		lhs.swap(rhs);
 	}
 
-
-	#pragma region multimap
+#pragma region multimap
 	// MULTIMAP * ========================================================================================================
 
 	template <class Key, class T, class Compare = ft::less<Key>, class Alloc = std::allocator<ft::pair<const Key, T> > >
@@ -510,20 +517,27 @@ namespace ft
 
 		multimap(const multimap &other) : tree(other.tree._comp, other.tree._alloc)
 		{
-			clear();
-			insert(other.begin(), other.end());
+			try
+			{
+				clear();
+				insert(other.begin(), other.end());
+			}
+			catch (...)
+			{
+				clear();
+				throw;
+			}
 		}
 
 		~multimap() { clear(); }
 
 		multimap &operator=(const multimap &other)
 		{
-			if (this == &other)
-				return *this;
-			clear();
-			insert(other.begin(), other.end());
-			tree._comp = other.tree._comp;
-			tree._alloc = other.tree._alloc;
+			if (this != &other)
+			{
+				multimap tmp(other);
+				this->swap(tmp);
+			}
 			return *this;
 		}
 
@@ -648,17 +662,18 @@ namespace ft
 			return iterator(tree.insert_node(val));
 		}
 
-		iterator insert(iterator position, const value_type &val)
+		iterator insert(iterator hint, const value_type &val)
 		{
-			(void)position;
+			if (hint != end() && !tree._comp(val.first, hint->first))
+				return tree.insert_node(hint.base(), val);
 			return insert(val);
 		}
 
 		template <class InputIterator>
 		void insert(InputIterator first, InputIterator last)
 		{
-			while (first != last)
-				insert(*first++);
+			for (InputIterator it = first; it != last; ++it)
+				tree.insert_node(*it);
 		}
 
 		//
@@ -837,25 +852,25 @@ namespace ft
 	template <class Key, class T, class Compare, class Alloc>
 	bool operator<(const ft::multimap<Key, T, Compare, Alloc> &lhs, const ft::multimap<Key, T, Compare, Alloc> &rhs)
 	{
-		return lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+		return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 	}
 
 	template <class Key, class T, class Compare, class Alloc>
 	bool operator<=(const ft::multimap<Key, T, Compare, Alloc> &lhs, const ft::multimap<Key, T, Compare, Alloc> &rhs)
 	{
-		return !(lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
+		return !(ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
 	}
 
 	template <class Key, class T, class Compare, class Alloc>
 	bool operator>(const ft::multimap<Key, T, Compare, Alloc> &lhs, const ft::multimap<Key, T, Compare, Alloc> &rhs)
 	{
-		return lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end());
+		return ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end());
 	}
 
 	template <class Key, class T, class Compare, class Alloc>
 	bool operator>=(const ft::multimap<Key, T, Compare, Alloc> &lhs, const ft::multimap<Key, T, Compare, Alloc> &rhs)
 	{
-		return !(lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+		return !(ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 	}
 
 	template <class Key, class T, class Compare, class Alloc>

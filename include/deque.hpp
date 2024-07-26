@@ -240,13 +240,27 @@ namespace ft
             this->assign(n, val);
         }
 
-        template <class InputIterator>
-        deque(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type(),
-              typename ft::enable_if<!ft::is_same<InputIterator, int>::value>::type * = 0)
+template <class InputIterator>
+deque(InputIterator first, InputIterator last,
+      const allocator_type& alloc = allocator_type(),
+      typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0)
+    : _alloc(alloc)
+{
+    this->_init(alloc);
+    
+    try 
+    {
+        for (; first != last; ++first)
         {
-            this->_init(alloc);
-            this->assign(first, last);
+            this->push_back(*first);
         }
+    }
+    catch (...)
+    {
+        this->clear();
+        throw;
+    }
+}
 
         deque(const deque &x)
         {
@@ -483,12 +497,32 @@ namespace ft
             return (position);
         }
 
-        iterator erase(iterator first, iterator last)
-        {
-            for (size_type i = last - first; i > 0; i--)
-                this->erase(first);
-            return (first);
-        }
+iterator erase(iterator first, iterator last)
+{
+    if (first == last)
+        return first;
+
+    difference_type n = ft::distance(first, last);
+    iterator it = first;
+    iterator end_it = this->end();
+
+    // Move the elements after 'last' to 'first'
+    while (last != end_it)
+    {
+        *first = *last;
+        ++first;
+        ++last;
+    }
+
+    // Destroy the now-redundant elements at the end
+    while (n > 0)
+    {
+        this->pop_back();
+        --n;
+    }
+
+    return it;
+}
 
         //////////////////////////////
         // Common modifiers

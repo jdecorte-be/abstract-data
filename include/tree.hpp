@@ -12,17 +12,17 @@ namespace ft
         Compare comp;
         pair_compare(Compare c = Compare()) : comp(c) {}
 
-        bool operator()(const ft::pair<const Key, Value>& lhs, const ft::pair<const Key, Value>& rhs) const
+        bool operator()(const ft::pair<const Key, Value> &lhs, const ft::pair<const Key, Value> &rhs) const
         {
             return comp(lhs.first, rhs.first);
         }
 
-        bool operator()(const ft::pair<const Key, Value>& lhs, const Key& rhs) const
+        bool operator()(const ft::pair<const Key, Value> &lhs, const Key &rhs) const
         {
             return comp(lhs.first, rhs);
         }
 
-        bool operator()(const Key& lhs, const ft::pair<const Key, Value>& rhs) const
+        bool operator()(const Key &lhs, const ft::pair<const Key, Value> &rhs) const
         {
             return comp(lhs, rhs.first);
         }
@@ -44,13 +44,13 @@ namespace ft
     template <class T>
     struct getKey
     {
-        const T& operator()(const T& data) const { return data; }
+        const T &operator()(const T &data) const { return data; }
     };
 
     template <class Key, class Value>
     struct getKey<ft::pair<const Key, Value> >
     {
-        const Key& operator()(const ft::pair<const Key, Value>& data) const { return data.first; }
+        const Key &operator()(const ft::pair<const Key, Value> &data) const { return data.first; }
     };
 
     template <class T, class Compare, class Alloc>
@@ -69,85 +69,114 @@ namespace ft
 
 
 
-node_type* insert_node(const T& val)
+        
+node_type *insert_node(const T &val)
 {
-    node_type* newnode = new_node(val);
-    
-    if (root == NULL)
-    {
-        root = newnode;
-        root->color = false; // Root is always black
-        return root;
-    }
+    node_type *y = NULL;
+    node_type *x = root;
 
-    node_type* parent = NULL;
-    node_type* current = root;
-
-    // Ignore hint and always find the correct position
-    while (current != NULL)
+    while (x != NULL)
     {
-        parent = current;
-        if (_comp(getKey<T>()(val), getKey<T>()(current->data)))
-            current = current->left;
-        else if (_comp(getKey<T>()(current->data), getKey<T>()(val)))
-            current = current->right;
+        y = x;
+        if (_comp(getKey<T>()(val), getKey<T>()(x->data)))
+            x = x->left;
         else
-        {
-            // Key already exists, don't insert
-            _alloc.destroy(newnode);
-            _alloc.deallocate(newnode, 1);
-            return current;
-        }
+            x = x->right;
+        // Remove the equality check to allow duplicate keys
     }
 
-    // Insert new node
-    newnode->parent = parent;
-    if (_comp(getKey<T>()(val), getKey<T>()(parent->data)))
-        parent->left = newnode;
+    node_type *z = _alloc.allocate(1);
+    _alloc.construct(z, val);
+
+    z->left = NULL;
+    z->right = NULL;
+
+    z->parent = y;
+    if (y == NULL)
+        root = z;
+    else if (_comp(getKey<T>()(val), getKey<T>()(y->data)))
+        y->left = z;
     else
-        parent->right = newnode;
+        y->right = z;
 
-    // Fix the tree
-    insert_fixup(newnode);
+    z->left = NULL;
+    z->right = NULL;
+    z->color = true; // Red
 
-    return newnode;
+    insert_fixup(z);
+
+    return z;
 }
 
-        void delete_node(node_type *ptr)
+node_type *insert_node(node_type *hint, const T &val)
+{
+    if (hint != NULL)
+    {
+        // Use the hint if it's in the correct position
+        if ((_comp(getKey<T>()(hint->data), getKey<T>()(val)) || 
+             !_comp(getKey<T>()(val), getKey<T>()(hint->data))) && 
+            hint->right == NULL)
         {
-            node_type *tmp = ptr;
-            node_type *x = NULL;
+            node_type *z = _alloc.allocate(1);
+            _alloc.construct(z, val);
+            z->parent = hint;
+            hint->right = z;
+            z->left = NULL;
+            z->right = NULL;
+            z->color = true; // Red
+            insert_fixup(z);
+            return z;
+        }
+    }
+    // If hint is not useful, fall back to regular insert
+    return insert_node(val);
+}
 
-            if (!ptr->left)
+        void delete_node(node_type *z)
+        {
+            node_type *y = z;
+            node_type *x;
+            bool y_original_color = y->color;
+
+            if (z->left == NULL)
             {
-                x = ptr->right;
-                transplant(ptr, ptr->right);
+                x = z->right;
+                transplant(z, z->right);
             }
-            else if (!ptr->right)
+            else if (z->right == NULL)
             {
-                x = ptr->left;
-                transplant(ptr, ptr->left);
+                x = z->left;
+                transplant(z, z->left);
             }
-            else if (ptr->right && ptr->left)
+            else
             {
-                tmp = left_most(ptr->right);
-                x = tmp->right;
-                if (tmp->parent == ptr && x)
-                    x->parent = tmp;
+                y = left_most(z->right);
+                y_original_color = y->color;
+                x = y->right;
+
+                if (y->parent == z)
+                {
+                    if (x)
+                        x->parent = y;
+                }
                 else
                 {
-                    transplant(tmp, tmp->right);
-                    tmp->right = ptr->right;
-                    if (tmp->right)
-                        tmp->right->parent = tmp;
+                    transplant(y, y->right);
+                    y->right = z->right;
+                    y->right->parent = y;
                 }
-                transplant(ptr, tmp);
-                tmp->left = ptr->left;
-                if (tmp->left)
-                    tmp->left->parent = tmp;
+
+                transplant(z, y);
+                y->left = z->left;
+                y->left->parent = y;
+                y->color = z->color;
             }
-            _alloc.destroy(ptr);
-            _alloc.deallocate(ptr, 1);
+
+            if (y_original_color == false)
+                delete_fixup(x);
+
+            _alloc.destroy(z);
+            _alloc.deallocate(z, 1);
         }
 
     public:
@@ -160,6 +189,8 @@ node_type* insert_node(const T& val)
 
         void left_rotate(node_type *x)
         {
+            if(x == NULL || x->right == NULL)
+                return;
             node_type *y = x->right;
             x->right = y->left;
             if (y->left != NULL)
@@ -185,6 +216,8 @@ node_type* insert_node(const T& val)
 
         void right_rotate(node_type *y)
         {
+            if(y == NULL || y->left == NULL)
+                return;
             node_type *x = y->left;
             y->left = x->right;
             if (x->right != NULL)
@@ -210,12 +243,12 @@ node_type* insert_node(const T& val)
 
         void insert_fixup(node_type *z)
         {
-            while (z->parent != NULL && z->parent->color == true)
+            while (z->parent && z->parent->color == true)
             {
                 if (z->parent == z->parent->parent->left)
                 {
                     node_type *y = z->parent->parent->right;
-                    if (y != NULL && y->color == true)
+                    if (y && y->color == true)
                     {
                         z->parent->color = false;
                         y->color = false;
@@ -234,7 +267,7 @@ node_type* insert_node(const T& val)
                         right_rotate(z->parent->parent);
                     }
                 }
-                else
+                else // mirro cases
                 {
                     node_type *y = z->parent->parent->left;
                     if (y != NULL && y->color == true)
@@ -262,7 +295,7 @@ node_type* insert_node(const T& val)
 
         void delete_fixup(node_type *x)
         {
-            node_type *w;
+            node_type *w = NULL;
             while (x && x != root && x->color == false)
             {
                 if (x == x->parent->left)
@@ -275,14 +308,18 @@ node_type* insert_node(const T& val)
                         left_rotate(x->parent);
                         w = x->parent->right;
                     }
-                    if ((w->left == NULL || w->left->color == false) && (w->right == NULL || w->right->color == false))
+                    if (w \
+                    && (w->left == NULL || \
+                     w->left->color == false) \
+                     && (w->right == NULL \
+                     || w->right->color == false))
                     { // Case 2
                         w->color = true;
                         x = x->parent;
                     }
                     else
                     {
-                        if (w->right == NULL || w->right->color == false)
+                        if (w && (w->right == NULL || w->right->color == false))
                         { // Case 3
                             if (w->left)
                                 w->left->color = false;
@@ -291,9 +328,10 @@ node_type* insert_node(const T& val)
                             w = x->parent->right;
                         }
                         // Case 4
-                        w->color = x->parent->color;
+                        if(w)
+                            w->color = x->parent->color;
                         x->parent->color = false;
-                        if (w->right)
+                        if (w && w->right)
                             w->right->color = false;
                         left_rotate(x->parent);
                         x = root; // This will break the loop
@@ -309,14 +347,14 @@ node_type* insert_node(const T& val)
                         right_rotate(x->parent);
                         w = x->parent->left;
                     }
-                    if ((w->right == NULL || w->right->color == false) && (w->left == NULL || w->left->color == false))
+                    if (w && (w->right == NULL || w->right->color == false) && (w->left == NULL || w->left->color == false))
                     {
                         w->color = true;
                         x = x->parent;
                     }
                     else
                     {
-                        if (w->left == NULL || w->left->color == false)
+                        if (w && (w->left == NULL || w->left->color == false))
                         {
                             if (w->right)
                                 w->right->color = false;
@@ -324,9 +362,10 @@ node_type* insert_node(const T& val)
                             left_rotate(w);
                             w = x->parent->left;
                         }
-                        w->color = x->parent->color;
+                        if(w)
+                            w->color = x->parent->color;
                         x->parent->color = false;
-                        if (w->left)
+                        if (w && w->left)
                             w->left->color = false;
                         right_rotate(x->parent);
                         x = root; // This will break the loop

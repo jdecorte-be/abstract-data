@@ -81,12 +81,11 @@ namespace ft
 
         set &operator=(const set &other)
         {
-            if (this == &other)
-                return *this;
-            clear();
-            insert(other.begin(), other.end());
-            tree._comp = other.tree._comp;
-            tree._alloc = other.tree._alloc;
+            if (this != &other)
+            {
+                set tmp(other);
+                this->swap(tmp);
+            }
             return *this;
         }
 
@@ -196,8 +195,12 @@ namespace ft
         template <class InputIterator>
         void insert(InputIterator first, InputIterator last) 
         {
-            while (first != last)
-                insert(*first++);
+			for (InputIterator it = first; it != last; ++it)
+			{
+                iterator ite = find(*it);
+                if (ite == end())
+                    tree.insert_node(*it);
+			}
         }
 
         //
@@ -474,12 +477,11 @@ namespace ft
 
         multiset &operator=(const multiset &other)
         {
-            if (this == &other)
-                return *this;
-            clear();
-            insert(other.begin(), other.end());
-            tree._comp = other.tree._comp;
-            tree._alloc = other.tree._alloc;
+            if (this != &other)
+            {
+                multiset tmp(other);
+                this->swap(tmp);
+            }
             return *this;
         }
 
@@ -586,8 +588,8 @@ namespace ft
         template <class InputIterator>
         void insert(InputIterator first, InputIterator last) 
         {
-            while (first != last)
-                insert(*first++);
+            for (InputIterator it = first; it != last; ++it)
+                tree.insert_node(*it);
         }
 
         //

@@ -557,6 +557,19 @@ namespace ft
     {
         return lhs.base() != rhs.base();
     }
+
+
+    template <class InputIterator>
+    size_t distance(InputIterator first, InputIterator last)
+    {
+        size_t n = 0;
+        while (first != last)
+        {
+            ++first;
+            ++n;
+        }
+        return n;
+    }
 }
 
 #endif
