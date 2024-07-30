@@ -15,7 +15,7 @@ namespace ft
         virtual ~exception() throw() {}
 
         exception &operator=(const exception &) throw() { return *this; }
-        virtual const char* what() const throw() { return "ft::exception"; }
+        virtual const char *what() const throw() { return "ft::exception"; }
     };
 
     class out_of_range : public ft::exception
@@ -23,7 +23,7 @@ namespace ft
     public:
         explicit out_of_range(const std::string &what_arg) : s(what_arg) {}
         virtual ~out_of_range() throw() {}
-        const char* what() const throw() { return s.c_str(); }
+        const char *what() const throw() { return s.c_str(); }
 
     private:
         std::string s;
@@ -34,7 +34,7 @@ namespace ft
     public:
         explicit length_error(const std::string &what_arg) : s(what_arg) {}
         virtual ~length_error() throw() {}
-        const char* what() const throw() { return s.c_str(); }
+        const char *what() const throw() { return s.c_str(); }
 
     private:
         std::string s;

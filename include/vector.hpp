@@ -123,9 +123,10 @@ namespace ft
 
     public:
         explicit vector(const allocator_type &alloc = allocator_type())
-            : _size(0), _cap(0), _alloc(alloc) {
-                arr = _alloc.allocate(0);
-            }
+            : _size(0), _cap(0), _alloc(alloc)
+        {
+            arr = _alloc.allocate(0);
+        }
 
         explicit vector(size_type n, const value_type &val = value_type(), const allocator_type &alloc = allocator_type())
             : arr(NULL), _size(0), _cap(0), _alloc(alloc)
@@ -154,7 +155,7 @@ namespace ft
         ~vector()
         {
             clear();
-            if(_cap)
+            if (_cap)
                 _alloc.deallocate(arr, _cap);
         }
 

@@ -12,7 +12,7 @@
 namespace ft
 {
 
-    template <class T, class Container = ft::vector<T> >
+    template <class T, class Container = ft::vector<T>>
     class stack
     {
     public:
@@ -35,7 +35,6 @@ namespace ft
         void push(const value_type &val) { c.push_back(val); }
 
         void pop() { c.pop_back(); }
-
 
     protected:
         container_type c;

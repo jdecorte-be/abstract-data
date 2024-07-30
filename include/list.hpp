@@ -1,7 +1,6 @@
 #ifndef LIST_HPP
 #define LIST_HPP
 
-
 #include "utility.hpp"
 #include "iterator.hpp"
 #include "algorithm.hpp"
@@ -86,7 +85,6 @@ namespace ft
         private:
             node_type *_ptr;
         }; // Iterator
-
 
         typedef T value_type;
         typedef typename Alloc::template rebind<node>::other allocator_type;

@@ -287,7 +287,6 @@ namespace ft
             return ptr != tocomp.base();
         }
 
-
     private: // Private function like Next and Prev Node // Post order (root is end)
         Node *up_bigger_node(Node *node)
         {
@@ -481,7 +480,6 @@ namespace ft
         {
             return set_iterator<const T, const Node>(ptr, _end);
         }
-        
 
     private: // Private function like Next and Prev Node // Post order (root is end)
         Node *up_bigger_node(Node *node)
@@ -557,7 +555,6 @@ namespace ft
     {
         return lhs.base() != rhs.base();
     }
-
 
     template <class InputIterator>
     size_t distance(InputIterator first, InputIterator last)

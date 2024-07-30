@@ -4,7 +4,6 @@
 #include "vector.hpp"
 #include "algorithm.hpp"
 
-
 namespace ft
 {
 

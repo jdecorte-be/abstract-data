@@ -232,7 +232,7 @@ namespace ft
 
 		iterator insert(iterator hint, const value_type &val)
 		{
-			if(hint != end() && tree._comp(hint->first, val.first))
+			if (hint != end() && tree._comp(hint->first, val.first))
 				return tree.insert_node(hint.base(), val);
 			return insert(val).first;
 		}
@@ -242,8 +242,8 @@ namespace ft
 		{
 			for (InputIterator it = first; it != last; ++it)
 			{
-        		iterator ite = find(it->first);
-				if(ite == end())
+				iterator ite = find(it->first);
+				if (ite == end())
 					tree.insert_node(*it);
 			}
 		}
@@ -271,7 +271,7 @@ namespace ft
 		void erase(iterator first, iterator last)
 		{
 			// if (!(first == last || (first != end() && last != end())))
-        		// return;
+			// return;
 
 			while (first != last)
 				tree.delete_node((first++).base());

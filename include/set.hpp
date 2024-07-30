@@ -39,7 +39,7 @@ namespace ft
         //
         // Value comp (nested class)
         //
-        
+
         class value_compare
         {
             friend class set;
@@ -159,7 +159,7 @@ namespace ft
         //
         // Modifiers
         //
-        void clear() 
+        void clear()
         {
             if (tree.root)
             {
@@ -168,7 +168,7 @@ namespace ft
             }
         }
 
-        void swap(set &x) 
+        void swap(set &x)
         {
             ft::swap(tree.root, x.tree.root);
             ft::swap(tree._comp, x.tree._comp);
@@ -193,26 +193,26 @@ namespace ft
         }
 
         template <class InputIterator>
-        void insert(InputIterator first, InputIterator last) 
+        void insert(InputIterator first, InputIterator last)
         {
-			for (InputIterator it = first; it != last; ++it)
-			{
+            for (InputIterator it = first; it != last; ++it)
+            {
                 iterator ite = find(*it);
                 if (ite == end())
                     tree.insert_node(*it);
-			}
+            }
         }
 
         //
         // Modifiers Erase
         //
-        void erase(iterator pos) 
+        void erase(iterator pos)
         {
             if (pos != end())
                 tree.delete_node(pos.base());
         }
 
-        size_type erase(const key_type &k) 
+        size_type erase(const key_type &k)
         {
             iterator it = find(k);
             if (it != end())
@@ -223,7 +223,7 @@ namespace ft
             return 0;
         }
 
-        void erase(iterator first, iterator last) 
+        void erase(iterator first, iterator last)
         {
             while (first != last)
                 erase(first++);
@@ -232,17 +232,17 @@ namespace ft
         //
         // Lookup
         //
-        iterator find(const value_type &val) 
+        iterator find(const value_type &val)
         {
             return iterator(find_node(val));
         }
 
-        const_iterator find(const value_type &val) const 
+        const_iterator find(const value_type &val) const
         {
             return const_iterator(find_node(val));
         }
 
-        size_type count(const value_type &val) const 
+        size_type count(const value_type &val) const
         {
             return find(val) != end();
         }
@@ -376,7 +376,6 @@ namespace ft
         return !(lhs == rhs);
     }
 
-
     template <class T, class Compare, class Alloc>
     bool operator<(const ft::set<T, Compare, Alloc> &lhs, const ft::set<T, Compare, Alloc> &rhs)
     {
@@ -407,7 +406,7 @@ namespace ft
         lhs.swap(rhs);
     }
 
-    #pragma region multiset
+#pragma region multiset
     // multiset * ========================================================================================================
 
     template <class T, class Compare = std::less<T>, class Alloc = std::allocator<T> >
@@ -435,7 +434,7 @@ namespace ft
         //
         // Value comp (nested class)
         //
-        
+
         class value_compare
         {
             friend class multiset;
@@ -555,7 +554,7 @@ namespace ft
         //
         // Modifiers
         //
-        void clear() 
+        void clear()
         {
             if (tree.root)
             {
@@ -564,7 +563,7 @@ namespace ft
             }
         }
 
-        void swap(multiset &x) 
+        void swap(multiset &x)
         {
             ft::swap(tree.root, x.tree.root);
             ft::swap(tree._comp, x.tree._comp);
@@ -586,7 +585,7 @@ namespace ft
         }
 
         template <class InputIterator>
-        void insert(InputIterator first, InputIterator last) 
+        void insert(InputIterator first, InputIterator last)
         {
             for (InputIterator it = first; it != last; ++it)
                 tree.insert_node(*it);
@@ -595,13 +594,13 @@ namespace ft
         //
         // Modifiers Erase
         //
-        void erase(iterator pos) 
+        void erase(iterator pos)
         {
             if (pos != end())
                 tree.delete_node(pos.base());
         }
 
-        size_type erase(const key_type &k) 
+        size_type erase(const key_type &k)
         {
             iterator it = find(k);
             if (it != end())
@@ -612,7 +611,7 @@ namespace ft
             return 0;
         }
 
-        void erase(iterator first, iterator last) 
+        void erase(iterator first, iterator last)
         {
             while (first != last)
                 erase(first++);
@@ -621,17 +620,17 @@ namespace ft
         //
         // Lookup
         //
-        iterator find(const value_type &val) 
+        iterator find(const value_type &val)
         {
             return iterator(find_node(val));
         }
 
-        const_iterator find(const value_type &val) const 
+        const_iterator find(const value_type &val) const
         {
             return const_iterator(find_node(val));
         }
 
-        size_type count(const value_type &val) const 
+        size_type count(const value_type &val) const
         {
             return find(val) != end();
         }
@@ -765,7 +764,6 @@ namespace ft
         return !(lhs == rhs);
     }
 
-
     template <class T, class Compare, class Alloc>
     bool operator<(const ft::multiset<T, Compare, Alloc> &lhs, const ft::multiset<T, Compare, Alloc> &rhs)
     {
@@ -795,7 +793,6 @@ namespace ft
     {
         lhs.swap(rhs);
     }
-
 
 } // namespace ft
 
