@@ -6,7 +6,7 @@
 #include "algorithm.hpp"
 #include "exception.hpp"
 #include "type_traits.hpp"
-#include "tree.hpp"
+#include "__tree.hpp"
 
 namespace ft
 {
@@ -57,9 +57,6 @@ namespace ft
 		RedBlackTree<value_type, Compare, allocator_type> tree;
 
 	public:
-		//
-		// Constructor
-		//
 		/**
 		 * Constructs an empty map with the specified comparison object and allocator.
 		 * 
@@ -98,24 +95,13 @@ namespace ft
 		 */
 		map(const map &other) : tree(other.tree._comp, other.tree._alloc)
 		{
-			try
-			{
-				// Clear any existing elements (should be empty, but just in case)
-				clear();
+			clear();
 
-				// Copy all elements from the other map
-				const_iterator it = other.begin();
-				const_iterator ite = other.end();
-				for (; it != ite; ++it)
-				{
-					insert(*it);
-				}
-			}
-			catch (...)
+			const_iterator it = other.begin();
+			const_iterator ite = other.end();
+			for (; it != ite; ++it)
 			{
-				// If an exception occurs, ensure we clean up
-				clear();
-				throw;
+				insert(*it);
 			}
 		}
 
@@ -144,9 +130,6 @@ namespace ft
 			return *this;
 		}
 
-		//
-		// Iterators
-		//
 		/**
 		 * Returns an iterator to the first element.
 		 * 
@@ -195,9 +178,6 @@ namespace ft
 			return const_iterator(NULL, tree.right_most(tree.root));
 		}
 
-		//
-		// Reverse Iterators
-		//
 		/**
 		 * Returns a reverse iterator to the first element of the reversed map.
 		 * 
@@ -246,9 +226,6 @@ namespace ft
 			return const_reverse_iterator(begin());
 		}
 
-		//
-		// Capacity
-		//
 		/**
 		 * Checks if the map is empty.
 		 * 
@@ -288,9 +265,6 @@ namespace ft
 			return tree._alloc.max_size();
 		}
 
-		//
-		// Element access
-		//
 		/**
 		 * Accesses the specified element with bounds checking.
 		 * 
@@ -341,9 +315,6 @@ namespace ft
 			return it->second;
 		}
 
-		//
-		// Modifiers
-		//
 		/**
 		 * Clears the contents of the map.
 		 * 
@@ -372,9 +343,6 @@ namespace ft
 			ft::swap(tree._alloc, x.tree._alloc);
 		}
 
-		//
-		// Modifiers Insert
-		//
 		/**
 		 * Inserts a value into the map.
 		 * 
@@ -426,9 +394,6 @@ namespace ft
 			}
 		}
 
-		//
-		// Modifiers Erase
-		//
 		/**
 		 * Erases the element at pos.
 		 * 
@@ -475,9 +440,6 @@ namespace ft
 				tree.delete_node((first++).base());
 		}
 
-		//
-		// Lookup
-		//
 		/**
 		 * Finds an element with the specified key.
 		 * 
@@ -623,9 +585,6 @@ namespace ft
 			return it;
 		}
 
-		//
-		// Observers
-		//
 		/**
 		 * Returns the comparison object used to order the keys.
 		 * 
@@ -714,9 +673,6 @@ namespace ft
 		}
 	};
 
-	//
-	// Non-member functions (operators)
-	//
 	/**
 	 * Checks if two maps are equal.
 	 * 
@@ -881,9 +837,6 @@ namespace ft
 		RedBlackTree<value_type, Compare, allocator_type> tree;
 
 	public:
-		//
-		// Constructor
-		//
 		/**
 		 * Constructs an empty multimap with the specified comparison object and allocator.
 		 * 
@@ -922,16 +875,8 @@ namespace ft
 		 */
 		multimap(const multimap &other) : tree(other.tree._comp, other.tree._alloc)
 		{
-			try
-			{
-				clear();
-				insert(other.begin(), other.end());
-			}
-			catch (...)
-			{
-				clear();
-				throw;
-			}
+			clear();
+			insert(other.begin(), other.end());
 		}
 
 		/**
@@ -959,9 +904,6 @@ namespace ft
 			return *this;
 		}
 
-		//
-		// Iterators
-		//
 		/**
 		 * Returns an iterator to the first element.
 		 * 
@@ -1010,9 +952,6 @@ namespace ft
 			return const_iterator(NULL, tree.right_most(tree.root));
 		}
 
-		//
-		// Reverse Iterators
-		//
 		/**
 		 * Returns a reverse iterator to the first element of the reversed multimap.
 		 * 
@@ -1061,9 +1000,6 @@ namespace ft
 			return const_reverse_iterator(begin());
 		}
 
-		//
-		// Capacity
-		//
 		/**
 		 * Checks if the multimap is empty.
 		 * 
@@ -1103,9 +1039,6 @@ namespace ft
 			return tree._alloc.max_size();
 		}
 
-		//
-		// Element access
-		//
 		/**
 		 * Accesses the specified element with bounds checking.
 		 * 
@@ -1156,9 +1089,6 @@ namespace ft
 			return it->second;
 		}
 
-		//
-		// Modifiers
-		//
 		/**
 		 * Clears the contents of the multimap.
 		 * 
@@ -1187,9 +1117,6 @@ namespace ft
 			ft::swap(tree._alloc, x.tree._alloc);
 		}
 
-		//
-		// Modifiers Insert
-		//
 		/**
 		 * Inserts a value into the multimap.
 		 * 
@@ -1234,9 +1161,6 @@ namespace ft
 				tree.insert_node(*it);
 		}
 
-		//
-		// Modifiers Erase
-		//
 		/**
 		 * Erases the element at pos.
 		 * 
@@ -1283,9 +1207,6 @@ namespace ft
 				erase(first++);
 		}
 
-		//
-		// Lookup
-		//
 		/**
 		 * Finds an element with the specified key.
 		 * 
@@ -1431,9 +1352,6 @@ namespace ft
 			return it;
 		}
 
-		//
-		// Observers
-		//
 		/**
 		 * Returns the comparison object used to order the keys.
 		 * 
@@ -1522,9 +1440,6 @@ namespace ft
 		}
 	};
 
-	//
-	// Non-member functions (operators)
-	//
 	/**
 	 * Checks if two multimaps are equal.
 	 * 

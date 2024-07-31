@@ -292,7 +292,7 @@ namespace ft
              * @return Reference to the value at index n
              * 
              * @throws None
-             * @complexity O(n)
+             * @complexity O(1)
              */
             value_type &operator[](size_type n) const
             {
@@ -329,9 +329,7 @@ namespace ft
              * @throws None
              * @complexity O(1)
              */
-            value_type
-
- *getPtr(void) const { return (_ptr); }
+            value_type *getPtr(void) const { return (_ptr); }
 
             /**
              * Get the deque associated with the iterator
@@ -526,6 +524,16 @@ namespace ft
         typedef typename dequeIterator<false>::difference_type difference_type;
         typedef typename dequeIterator<false>::size_type size_type;
 
+        private:
+            allocator_type _alloc;
+            value_type **_map;
+            size_type _size;
+            size_type _start;
+            size_type _end;
+            static const size_type _node_size = 8;
+
+        public:
+
         //////////////////////////////
         // Constructors
         //////////////////////////////
@@ -577,18 +585,8 @@ namespace ft
         {
             this->_init(alloc);
 
-            try
-            {
-                for (; first != last; ++first)
-                {
-                    this->push_back(*first);
-                }
-            }
-            catch (...)
-            {
-                this->clear();
-                throw;
-            }
+            for (; first != last; ++first)
+                this->push_back(*first);
         }
 
         /**
@@ -605,10 +603,6 @@ namespace ft
             *this = x;
         }
 
-        //////////////////////////////
-        // Destructors
-        //////////////////////////////
-
         /**
          * Destructor for deque
          * 
@@ -621,10 +615,6 @@ namespace ft
             _alloc.deallocate(_map[0], this->_node_size);
             delete[] _map;
         }
-
-        //////////////////////////////
-        // Assignment operator
-        //////////////////////////////
 
         /**
          * Assignment operator for deque
@@ -1031,9 +1021,7 @@ namespace ft
          * Insert a range of elements at a given position
          * 
          * @param position Iterator to the position
-         * @
-
-param first Iterator to the beginning of the range
+         * @param first Iterator to the beginning of the range
          * @param last Iterator to the end of the range
          * 
          * @throws None
@@ -1215,10 +1203,6 @@ param first Iterator to the beginning of the range
                 this->pop_back();
         }
 
-        //////////////////////////////
-        // Allocator
-        //////////////////////////////
-
         /**
          * Get the allocator used by the deque
          * 
@@ -1231,7 +1215,6 @@ param first Iterator to the beginning of the range
         {
             return (allocator_type());
         }
-
         //////////////////////////////
         // Private functions
         //////////////////////////////
@@ -1358,16 +1341,7 @@ param first Iterator to the beginning of the range
             _map = _new;
         }
 
-        //////////////////////////////
-        // Member variables
-        //////////////////////////////
 
-        allocator_type _alloc;
-        value_type **_map;
-        size_type _size;
-        size_type _start;
-        size_type _end;
-        static const size_type _node_size = 8;
     }; // Deque
 
     //////////////////////////////
@@ -1387,9 +1361,7 @@ param first Iterator to the beginning of the range
     template <class T, class Alloc>
     bool operator==(const deque<T, Alloc> &lhs, const deque<T, Alloc> &rhs)
     {
-        return (ft::equal(lhs.begin
-
-(), lhs.end(), rhs.begin(), rhs.end()));
+        return (ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
     }
 
     /**

@@ -34,6 +34,10 @@ namespace ft
             typedef ft::size_t size_type;
             typedef ft::bidirectional_iterator_tag iterator_category;
 
+        private:
+            node_type *_ptr;
+        public:
+        
             /**
              * Default constructor for listIterator
              *
@@ -198,8 +202,7 @@ namespace ft
              */
             node_type *getPtr(void) const { return (_ptr); }
 
-        private:
-            node_type *_ptr;
+
         }; // Iterator
 
         typedef T value_type;
@@ -214,6 +217,11 @@ namespace ft
         typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
         typedef typename listIterator<false>::difference_type difference_type;
         typedef typename listIterator<false>::size_type size_type;
+
+        private:
+            allocator_type _alloc;
+            node *_end;
+        public:
 
         /**
          * Default constructor for list
@@ -286,10 +294,6 @@ namespace ft
             *this = x;
         }
 
-        //////////////////////////////
-        // Destructors
-        //////////////////////////////
-
         /**
          * Destructor for list
          *
@@ -302,10 +306,6 @@ namespace ft
             _alloc.destroy(_end);
             _alloc.deallocate(_end, 1);
         }
-
-        //////////////////////////////
-        // Assignment operator
-        //////////////////////////////
 
         /**
          * Assignment operator for list
@@ -347,9 +347,7 @@ namespace ft
         }
 
         /**
-         * Get constant iterator to the beginning
-
- of the list
+         * Get constant iterator to the beginning of the list
          *
          * @return Constant iterator to the beginning
          *
@@ -1221,12 +1219,6 @@ namespace ft
             return (prev);
         }
 
-        //////////////////////////////
-        // Member variables
-        //////////////////////////////
-
-        allocator_type _alloc;
-        node *_end;
     }; // List
 
     //////////////////////////////

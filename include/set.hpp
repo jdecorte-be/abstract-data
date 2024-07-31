@@ -6,7 +6,7 @@
 #include "algorithm.hpp"
 #include "exception.hpp"
 #include "type_traits.hpp"
-#include "tree.hpp"
+#include "__tree.hpp"
 
 namespace ft
 {
@@ -777,9 +777,6 @@ namespace ft
         RedBlackTree<value_type, Compare, allocator_type> tree;
 
     public:
-        //
-        // Constructor
-        //
         /**
          * Constructs an empty multiset with the given comparison object and allocator.
          * 

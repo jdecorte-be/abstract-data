@@ -6,19 +6,7 @@
 
 namespace ft
 {
-    /**
-     * @class priority_queue
-     * 
-     * @brief A priority queue implementation using a vector and custom comparator.
-     * 
-     * @tparam T The type of elements.
-     * @tparam Container The type of the underlying container. Defaults to ft::vector<T>.
-     * @tparam Compare The comparator type. Defaults to ft::less<typename Container::value_type>.
-     */
-    template <
-        class T,
-        class Container = ft::vector<T>,
-        class Compare = ft::less<typename Container::value_type> >
+    template <class T, class Container = ft::vector<T>, class Compare = ft::less<typename Container::value_type> >
     class priority_queue
     {
     public:
@@ -206,4 +194,4 @@ namespace ft
 
 } // namespace ft
 
-#endif // FT_PRIORITY_QUEUE_HPP
+#endif
