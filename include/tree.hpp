@@ -2,26 +2,52 @@
 #define TREE_HPP
 
 #include "utility.hpp"
-#include <memory>
 
 namespace ft
 {
-    template <class Key, class Value, class Compare = std::less<Key> >
+    template <class Key, class Value, class Compare = ft::less<Key> >
     struct pair_compare
     {
         Compare comp;
         pair_compare(Compare c = Compare()) : comp(c) {}
 
+        /**
+         * Compares two pairs using the key comparison function.
+         * 
+         * @param lhs Left-hand side pair
+         * @param rhs Right-hand side pair
+         * @return True if lhs is less than rhs, false otherwise
+         * 
+         * @complexity O(1)
+         */
         bool operator()(const ft::pair<const Key, Value> &lhs, const ft::pair<const Key, Value> &rhs) const
         {
             return comp(lhs.first, rhs.first);
         }
 
+        /**
+         * Compares a pair and a key using the key comparison function.
+         * 
+         * @param lhs Left-hand side pair
+         * @param rhs Right-hand side key
+         * @return True if lhs is less than rhs, false otherwise
+         * 
+         * @complexity O(1)
+         */
         bool operator()(const ft::pair<const Key, Value> &lhs, const Key &rhs) const
         {
             return comp(lhs.first, rhs);
         }
 
+        /**
+         * Compares a key and a pair using the key comparison function.
+         * 
+         * @param lhs Left-hand side key
+         * @param rhs Right-hand side pair
+         * @return True if lhs is less than rhs, false otherwise
+         * 
+         * @complexity O(1)
+         */
         bool operator()(const Key &lhs, const ft::pair<const Key, Value> &rhs) const
         {
             return comp(lhs, rhs.first);
@@ -38,18 +64,41 @@ namespace ft
         T data;
         bool color; // true for Red, false for Black
 
+        /**
+         * Constructs a binary tree node with the given data.
+         * 
+         * @param data The data to be stored in the node
+         * 
+         * @complexity O(1)
+         */
         bt_node(const T &data) : left(NULL), right(NULL), parent(NULL), data(data), color(true) {}
     };
 
     template <class T>
     struct getKey
     {
+        /**
+         * Returns the key from the data.
+         * 
+         * @param data The data
+         * @return The key
+         * 
+         * @complexity O(1)
+         */
         const T &operator()(const T &data) const { return data; }
     };
 
     template <class Key, class Value>
     struct getKey<ft::pair<const Key, Value> >
     {
+        /**
+         * Returns the key from the pair.
+         * 
+         * @param data The pair
+         * @return The key
+         * 
+         * @complexity O(1)
+         */
         const Key &operator()(const ft::pair<const Key, Value> &data) const { return data.first; }
     };
 
@@ -64,74 +113,103 @@ namespace ft
         allocator_type _alloc;
         Compare _comp;
 
+        /**
+         * Constructs an empty Red-Black Tree with the given comparison object and allocator.
+         * 
+         * @param comp Comparison function object
+         * @param alloc Allocator object
+         * 
+         * @complexity O(1)
+         */
         RedBlackTree(const Compare &comp = Compare(), const allocator_type &alloc = allocator_type())
             : root(NULL), _alloc(alloc), _comp(comp) {}
 
-
-
-        
-node_type *insert_node(const T &val)
-{
-    node_type *y = NULL;
-    node_type *x = root;
-
-    while (x != NULL)
-    {
-        y = x;
-        if (_comp(getKey<T>()(val), getKey<T>()(x->data)))
-            x = x->left;
-        else
-            x = x->right;
-        // Remove the equality check to allow duplicate keys
-    }
-
-    node_type *z = _alloc.allocate(1);
-    _alloc.construct(z, val);
-
-    z->left = NULL;
-    z->right = NULL;
-
-    z->parent = y;
-    if (y == NULL)
-        root = z;
-    else if (_comp(getKey<T>()(val), getKey<T>()(y->data)))
-        y->left = z;
-    else
-        y->right = z;
-
-    z->left = NULL;
-    z->right = NULL;
-    z->color = true; // Red
-
-    insert_fixup(z);
-
-    return z;
-}
-
-node_type *insert_node(node_type *hint, const T &val)
-{
-    if (hint != NULL)
-    {
-        // Use the hint if it's in the correct position
-        if ((_comp(getKey<T>()(hint->data), getKey<T>()(val)) || 
-             !_comp(getKey<T>()(val), getKey<T>()(hint->data))) && 
-            hint->right == NULL)
+        /**
+         * Inserts a value into the tree.
+         * 
+         * @param val Value to be inserted
+         * @return Pointer to the newly inserted node
+         * 
+         * @complexity O(log n)
+         */
+        node_type *insert_node(const T &val)
         {
+            node_type *y = NULL;
+            node_type *x = root;
+
+            while (x != NULL)
+            {
+                y = x;
+                if (_comp(getKey<T>()(val), getKey<T>()(x->data)))
+                    x = x->left;
+                else
+                    x = x->right;
+                // Remove the equality check to allow duplicate keys
+            }
+
             node_type *z = _alloc.allocate(1);
             _alloc.construct(z, val);
-            z->parent = hint;
-            hint->right = z;
+
+            z->left = NULL;
+            z->right = NULL;
+
+            z->parent = y;
+            if (y == NULL)
+                root = z;
+            else if (_comp(getKey<T>()(val), getKey<T>()(y->data)))
+                y->left = z;
+            else
+                y->right = z;
+
             z->left = NULL;
             z->right = NULL;
             z->color = true; // Red
+
             insert_fixup(z);
+
             return z;
         }
-    }
-    // If hint is not useful, fall back to regular insert
-    return insert_node(val);
-}
 
+        /**
+         * Inserts a value into the tree using a hint for the position.
+         * 
+         * @param hint Hint for the position where the value should be inserted
+         * @param val Value to be inserted
+         * @return Pointer to the newly inserted node
+         * 
+         * @complexity O(log n)
+         */
+        node_type *insert_node(node_type *hint, const T &val)
+        {
+            if (hint != NULL)
+            {
+                // Use the hint if it's in the correct position
+                if ((_comp(getKey<T>()(hint->data), getKey<T>()(val)) || 
+                     !_comp(getKey<T>()(val), getKey<T>()(hint->data))) && 
+                    hint->right == NULL)
+                {
+                    node_type *z = _alloc.allocate(1);
+                    _alloc.construct(z, val);
+                    z->parent = hint;
+                    hint->right = z;
+                    z->left = NULL;
+                    z->right = NULL;
+                    z->color = true; // Red
+                    insert_fixup(z);
+                    return z;
+                }
+            }
+            // If hint is not useful, fall back to regular insert
+            return insert_node(val);
+        }
+
+        /**
+         * Deletes a node from the tree.
+         * 
+         * @param z Pointer to the node to be deleted
+         * 
+         * @complexity O(log n)
+         */
         void delete_node(node_type *z)
         {
             node_type *y = z;
@@ -179,7 +257,14 @@ node_type *insert_node(node_type *hint, const T &val)
             _alloc.deallocate(z, 1);
         }
 
-    public:
+        /**
+         * Creates a new node with the given value.
+         * 
+         * @param val Value to be stored in the new node
+         * @return Pointer to the newly created node
+         * 
+         * @complexity O(1)
+         */
         node_type *new_node(const T &val)
         {
             node_type *newnode = _alloc.allocate(1);
@@ -187,6 +272,13 @@ node_type *insert_node(node_type *hint, const T &val)
             return newnode;
         }
 
+        /**
+         * Performs a left rotation on the given node.
+         * 
+         * @param x Pointer to the node to be rotated
+         * 
+         * @complexity O(1)
+         */
         void left_rotate(node_type *x)
         {
             if(x == NULL || x->right == NULL)
@@ -214,13 +306,22 @@ node_type *insert_node(node_type *hint, const T &val)
             x->parent = y;
         }
 
+        /**
+         * Performs a right rotation on the given node.
+         * 
+         * @param y Pointer to the node to be rotated
+         * 
+         * @complexity O(1)
+         */
         void right_rotate(node_type *y)
         {
             if(y == NULL || y->left == NULL)
                 return;
             node_type *x = y->left;
             y->left = x->right;
-            if (x->right != NULL)
+            if (x->right != NULL
+
+)
             {
                 x->right->parent = y;
             }
@@ -241,6 +342,13 @@ node_type *insert_node(node_type *hint, const T &val)
             y->parent = x;
         }
 
+        /**
+         * Fixes the tree after an insertion to maintain Red-Black properties.
+         * 
+         * @param z Pointer to the newly inserted node
+         * 
+         * @complexity O(log n)
+         */
         void insert_fixup(node_type *z)
         {
             while (z->parent && z->parent->color == true)
@@ -267,7 +375,7 @@ node_type *insert_node(node_type *hint, const T &val)
                         right_rotate(z->parent->parent);
                     }
                 }
-                else // mirro cases
+                else // mirror cases
                 {
                     node_type *y = z->parent->parent->left;
                     if (y != NULL && y->color == true)
@@ -293,6 +401,13 @@ node_type *insert_node(node_type *hint, const T &val)
             root->color = false;
         }
 
+        /**
+         * Fixes the tree after a deletion to maintain Red-Black properties.
+         * 
+         * @param x Pointer to the node that replaces the deleted node
+         * 
+         * @complexity O(log n)
+         */
         void delete_fixup(node_type *x)
         {
             node_type *w = NULL;
@@ -308,11 +423,7 @@ node_type *insert_node(node_type *hint, const T &val)
                         left_rotate(x->parent);
                         w = x->parent->right;
                     }
-                    if (w \
-                    && (w->left == NULL || \
-                     w->left->color == false) \
-                     && (w->right == NULL \
-                     || w->right->color == false))
+                    if (w && (w->left == NULL || w->left->color == false) && (w->right == NULL || w->right->color == false))
                     { // Case 2
                         w->color = true;
                         x = x->parent;
@@ -376,6 +487,14 @@ node_type *insert_node(node_type *hint, const T &val)
                 x->color = false; // Ensure the root is always black
         }
 
+        /**
+         * Replaces one subtree with another.
+         * 
+         * @param oldNode Pointer to the subtree to be replaced
+         * @param newNode Pointer to the subtree that will replace the old one
+         * 
+         * @complexity O(1)
+         */
         void transplant(node_type *oldNode, node_type *newNode)
         {
             if (!oldNode->parent)
@@ -388,6 +507,14 @@ node_type *insert_node(node_type *hint, const T &val)
                 newNode->parent = oldNode->parent;
         }
 
+        /**
+         * Returns the left-most node (minimum) starting from the given root.
+         * 
+         * @param root Pointer to the root node
+         * @return Pointer to the left-most node
+         * 
+         * @complexity O(log n)
+         */
         node_type *left_most(node_type *root) const
         {
             node_type *r = root;
@@ -398,6 +525,14 @@ node_type *insert_node(node_type *hint, const T &val)
             return r;
         }
 
+        /**
+         * Returns the right-most node (maximum) starting from the given root.
+         * 
+         * @param root Pointer to the root node
+         * @return Pointer to the right-most node
+         * 
+         * @complexity O(log n)
+         */
         node_type *right_most(node_type *root) const
         {
             node_type *r = root;
@@ -408,16 +543,42 @@ node_type *insert_node(node_type *hint, const T &val)
             return r;
         }
 
+        /**
+         * Checks if two values are equal.
+         * 
+         * @param lhs Left-hand side value
+         * @param rhs Right-hand side value
+         * @return True if the values are equal, false otherwise
+         * 
+         * @complexity O(1)
+         */
         bool equal(const T &lhs, const T &rhs) const
         {
             return !_comp(lhs, rhs) && !_comp(rhs, lhs);
         }
 
+        /**
+         * Finds a node with the given key.
+         * 
+         * @param key Key to search for
+         * @return Pointer to the node with the given key, or NULL if not found
+         * 
+         * @complexity O(log n)
+         */
         node_type *find_node(const T &key) const
         {
             return find_node(root, key);
         }
 
+        /**
+         * Finds a node with the given key starting from a specific root.
+         * 
+         * @param r Pointer to the root node to start the search from
+         * @param key Key to search for
+         * @return Pointer to the node with the given key, or NULL if not found
+         * 
+         * @complexity O(log n)
+         */
         node_type *find_node(node_type *r, const T &key) const
         {
             if (!r || equal(getKey<T>()(r->data), key))
