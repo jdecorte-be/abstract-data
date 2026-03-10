@@ -1,6 +1,30 @@
+<!-- README_HEADER_START -->
+<header>
+<div style="text-align: center; margin: 20px 0;">
+    <h1>Abstract_data</h1>
+    <p>
+        <a href="https://github.com/jdecorte-be/Abstract_data/actions" target="_blank">
+            <img src="https://img.shields.io/github/workflow/status/jdecorte-be/Abstract_data/CI" alt="CI Status" />
+        </a>
+        <a href="https://github.com/jdecorte-be/Abstract_data/issues" target="_blank">
+            <img src="https://img.shields.io/github/issues/jdecorte-be/Abstract_data" alt="Issues" />
+        </a>
+        <a href="https://github.com/jdecorte-be/Abstract_data/stargazers" target="_blank">
+            <img src="https://img.shields.io/github/stars/jdecorte-be/Abstract_data" alt="Stars" />
+        </a>
+    </p>
+    <nav>
+        <a href="#sequence-containers">Sequence</a> |
+        <a href="#associative-containers">Associative</a> |
+        <a href="#container-adaptors">Adaptors</a> |
+        <a href="#iterators">Iterators</a> |
+        <a href="#algorithms">Algorithms</a> |
+        <a href="#functors">Functors</a>
+    </nav>
+</div>
+</header>
+<!-- README_HEADER_END -->
 
-
-## Sequence containers
 - [x]  [`std::list`]
 - [x]  [`std::dequeue`]
 - [x]  [`std::vector`] (without `std::vector<bool>`)
