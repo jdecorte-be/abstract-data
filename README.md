@@ -2,18 +2,26 @@
 <!-- README_HEADER_START -->
 <header>
 <h1 align="center">
-  <a href="https://github.com/jdecorte-be/Abstract_data"><img src="assets/banner.png" alt="Abstract Data" ></a>
-  Abstract Data
+  <a href="https://github.com/jdecorte-be/Abstract_data"><img src=".assets/banner.png" alt="Abstract_data" ></a>
+  Abstract_data
   <br>
 </h1>
 
+  <p align="center">A project to re-implement C++ STL containers for better understanding of data structures and algorithms.</p>
+
 <p align="center">
-  <a href="https://github.com/jdecorte-be/Abstract_data/actions" target="_blank"><img src="https://img.shields.io/github/workflow/status/jdecorte-be/Abstract_data/CI" alt="CI Status"></a>
-  <a href="https://github.com/jdecorte-be/Abstract_data/issues" target="_blank"><img src="https://img.shields.io/github/issues/jdecorte-be/Abstract_data" alt="Issues"></a>
-  <a href="https://github.com/jdecorte-be/Abstract_data/stargazers" target="_blank"><img src="https://img.shields.io/github/stars/jdecorte-be/Abstract_data" alt="Stars"></a>
-  <a href="https://img.shields.io/badge/language-C%2B%2B-blue" target="_blank"><img src="https://img.shields.io/badge/language-C%2B%2B-blue" alt="Language: C++"></a>
-  <a href="https://img.shields.io/badge/topics-algorithms%2C%20data%20structures%2C%20containers%2C%20programming-lightgrey" target="_blank"><img src="https://img.shields.io/badge/topics-algorithms%2C%20data%20structures%2C%20containers%2C%20programming-lightgrey" alt="Topics: algorithms, data structures, containers, programming"></a>
-  <a href="https://github.com/jdecorte-be/Abstract_data/blob/main/LICENSE" target="_blank"><img src="https://img.shields.io/badge/license-MIT-brightgreen" alt="License: MIT"></a>
+  <a href="https://github.com/jdecorte-be/Abstract_data">
+    <img src="https://shields.io/github/stars/jdecorte-be/Abstract_data?logo=star&logoColor=white&labelColor=000000&color=yellow" alt="Abstract_data badge">
+  </a>
+  <a href="https://github.com/jdecorte-be/Abstract_data">
+    <img src="https://shields.io/github/issues/jdecorte-be/Abstract_data?logoColor=white&labelColor=000000&color=orange" alt="Abstract_data badge">
+  </a>
+  <a href="https://github.com/jdecorte-be/Abstract_data">
+    <img src="https://shields.io/github/repo-size/jdecorte-be/Abstract_data?logo=database&logoColor=white&labelColor=000000&color=purple" alt="Abstract_data badge">
+  </a>
+  <a href="https://github.com/jdecorte-be/Abstract_data">
+    <img src="https://shields.io/github/languages/top/jdecorte-be/Abstract_data?logo=code&logoColor=white&labelColor=000000&color=green" alt="Abstract_data badge">
+  </a>
 </p>
 <p align="center">
   <a href="#associative-containers">Associative containers</a> •
