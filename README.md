@@ -8,12 +8,12 @@
 </h1>
 
 <p align="center">
-  <a href=\"https://github.com/jdecorte-be/Abstract_data/actions\" target=\"_blank\"><img src=\"https://img.shields.io/github/workflow/status/jdecorte-be/Abstract_data/CI\" alt=\"CI Status\"></a>
-  <a href=\"https://github.com/jdecorte-be/Abstract_data/issues\" target=\"_blank\"><img src=\"https://img.shields.io/github/issues/jdecorte-be/Abstract_data\" alt=\"Issues\"></a>
-  <a href=\"https://github.com/jdecorte-be/Abstract_data/stargazers\" target=\"_blank\"><img src=\"https://img.shields.io/github/stars/jdecorte-be/Abstract_data\" alt=\"Stars\"></a>
-  <a href=\"https://img.shields.io/badge/language-C%2B%2B-blue\" target=\"_blank\"><img src=\"https://img.shields.io/badge/language-C%2B%2B-blue\" alt=\"Language: C++\"></a>
-  <a href=\"https://img.shields.io/badge/topics-algorithms%2C%20data%20structures%2C%20containers%2C%20programming-lightgrey\" target=\"_blank\"><img src=\"https://img.shields.io/badge/topics-algorithms%2C%20data%20structures%2C%20containers%2C%20programming-lightgrey\" alt=\"Topics: algorithms, data structures, containers, programming\"></a>
-  <a href=\"https://github.com/jdecorte-be/Abstract_data/blob/main/LICENSE\" target=\"_blank\"><img src=\"https://img.shields.io/badge/license-MIT-brightgreen\" alt=\"License: MIT\"></a>
+  <a href="https://github.com/jdecorte-be/Abstract_data/actions" target="_blank"><img src="https://img.shields.io/github/workflow/status/jdecorte-be/Abstract_data/CI" alt="CI Status"></a>
+  <a href="https://github.com/jdecorte-be/Abstract_data/issues" target="_blank"><img src="https://img.shields.io/github/issues/jdecorte-be/Abstract_data" alt="Issues"></a>
+  <a href="https://github.com/jdecorte-be/Abstract_data/stargazers" target="_blank"><img src="https://img.shields.io/github/stars/jdecorte-be/Abstract_data" alt="Stars"></a>
+  <a href="https://img.shields.io/badge/language-C%2B%2B-blue" target="_blank"><img src="https://img.shields.io/badge/language-C%2B%2B-blue" alt="Language: C++"></a>
+  <a href="https://img.shields.io/badge/topics-algorithms%2C%20data%20structures%2C%20containers%2C%20programming-lightgrey" target="_blank"><img src="https://img.shields.io/badge/topics-algorithms%2C%20data%20structures%2C%20containers%2C%20programming-lightgrey" alt="Topics: algorithms, data structures, containers, programming"></a>
+  <a href="https://github.com/jdecorte-be/Abstract_data/blob/main/LICENSE" target="_blank"><img src="https://img.shields.io/badge/license-MIT-brightgreen" alt="License: MIT"></a>
 </p>
 <p align="center">
   <a href="#associative-containers">Associative containers</a> •
