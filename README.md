@@ -1,4 +1,6 @@
+
 <!-- README_HEADER_START -->
+<header>
 <header>
 <div style="text-align: center; margin: 20px 0;">
     <h1>Abstract_data</h1>
@@ -14,17 +16,17 @@
         </a>
     </p>
     <nav>
-        <a href="#sequence-containers">Sequence</a> |
         <a href="#associative-containers">Associative</a> |
         <a href="#container-adaptors">Adaptors</a> |
         <a href="#iterators">Iterators</a> |
         <a href="#algorithms">Algorithms</a> |
-        <a href="#functors">Functors</a>
+        <a href="#functors">Functors</a> |
+        <a href="#summary">Summary</a>
     </nav>
 </div>
 </header>
+</header>
 <!-- README_HEADER_END -->
-
 - [x]  [`std::list`]
 - [x]  [`std::dequeue`]
 - [x]  [`std::vector`] (without `std::vector<bool>`)
