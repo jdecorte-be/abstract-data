@@ -1,30 +1,29 @@
 
 <!-- README_HEADER_START -->
 <header>
-<header>
-<div style="text-align: center; margin: 20px 0;">
-    <h1>Abstract_data</h1>
-    <p>
-        <a href="https://github.com/jdecorte-be/Abstract_data/actions" target="_blank">
-            <img src="https://img.shields.io/github/workflow/status/jdecorte-be/Abstract_data/CI" alt="CI Status" />
-        </a>
-        <a href="https://github.com/jdecorte-be/Abstract_data/issues" target="_blank">
-            <img src="https://img.shields.io/github/issues/jdecorte-be/Abstract_data" alt="Issues" />
-        </a>
-        <a href="https://github.com/jdecorte-be/Abstract_data/stargazers" target="_blank">
-            <img src="https://img.shields.io/github/stars/jdecorte-be/Abstract_data" alt="Stars" />
-        </a>
-    </p>
-    <nav>
-        <a href="#associative-containers">Associative</a> |
-        <a href="#container-adaptors">Adaptors</a> |
-        <a href="#iterators">Iterators</a> |
-        <a href="#algorithms">Algorithms</a> |
-        <a href="#functors">Functors</a> |
-        <a href="#summary">Summary</a>
-    </nav>
-</div>
-</header>
+<h1 align="center">
+  <a href="https://github.com/jdecorte-be/Abstract_data"><img src="assets/banner.png" alt="Abstract Data" ></a>
+  Abstract Data
+  <br>
+</h1>
+
+<p align="center">
+  <a href=\"https://github.com/jdecorte-be/Abstract_data/actions\" target=\"_blank\"><img src=\"https://img.shields.io/github/workflow/status/jdecorte-be/Abstract_data/CI\" alt=\"CI Status\"></a>
+  <a href=\"https://github.com/jdecorte-be/Abstract_data/issues\" target=\"_blank\"><img src=\"https://img.shields.io/github/issues/jdecorte-be/Abstract_data\" alt=\"Issues\"></a>
+  <a href=\"https://github.com/jdecorte-be/Abstract_data/stargazers\" target=\"_blank\"><img src=\"https://img.shields.io/github/stars/jdecorte-be/Abstract_data\" alt=\"Stars\"></a>
+  <a href=\"https://img.shields.io/badge/language-C%2B%2B-blue\" target=\"_blank\"><img src=\"https://img.shields.io/badge/language-C%2B%2B-blue\" alt=\"Language: C++\"></a>
+  <a href=\"https://img.shields.io/badge/topics-algorithms%2C%20data%20structures%2C%20containers%2C%20programming-lightgrey\" target=\"_blank\"><img src=\"https://img.shields.io/badge/topics-algorithms%2C%20data%20structures%2C%20containers%2C%20programming-lightgrey\" alt=\"Topics: algorithms, data structures, containers, programming\"></a>
+  <a href=\"https://github.com/jdecorte-be/Abstract_data/blob/main/LICENSE\" target=\"_blank\"><img src=\"https://img.shields.io/badge/license-MIT-brightgreen\" alt=\"License: MIT\"></a>
+</p>
+<p align="center">
+  <a href="#associative-containers">Associative containers</a> •
+  <a href="#container-adaptors">Container adaptors</a> •
+  <a href="#iterators">Iterators</a> •
+  <a href="#algorithms">Algorithms</a> •
+  <a href="#functors">Functors</a> •
+  <a href="#table-of-contents">Table of Contents</a> •
+  <a href="#summary">Summary</a>
+</p>
 </header>
 <!-- README_HEADER_END -->
 - [x]  [`std::list`]
