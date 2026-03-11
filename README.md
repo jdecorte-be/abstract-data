@@ -73,9 +73,6 @@
 
 
 
-
-![Abstract Data Banner](./.assets/banner.png)
-
 ## About This Project
 
 This project is a from-scratch re-implementation of a subset of the C++98 Standard Template Library (STL). Its primary goal is educational: to gain a deep understanding of the underlying mechanics of common data structures, iterators, and algorithms. Every component is built from the ground up to mimic the behavior and interface of the standard library, providing insight into memory management, template metaprogramming, and API design in C++98.
