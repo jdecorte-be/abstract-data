@@ -74,39 +74,41 @@
 
 
 
-## About The Project
+![Abstract Data Banner](./.assets/banner.png)
 
-This project is a from-scratch re-implementation of a subset of the C++98 Standard Template Library (STL). The primary goal is educational: to gain a deep understanding of the underlying mechanics of common data structures, iterators, and algorithms.
+## About This Project
 
-Every component, from containers to utility functions, is built from the ground up to mimic the behavior and interface of the standard library, providing insight into memory management, template metaprogramming, and API design.
+This project is a from-scratch re-implementation of a subset of the C++98 Standard Template Library (STL). Its primary goal is educational: to gain a deep understanding of the underlying mechanics of common data structures, iterators, and algorithms. Every component is built from the ground up to mimic the behavior and interface of the standard library, providing insight into memory management, template metaprogramming, and API design in C++98.
 
-## Features
+## Implemented Components
 
-This library includes custom implementations of the following STL components, all within the `ft` namespace.
+This library provides custom implementations of the following STL components, all within the `ft` namespace to prevent conflicts with the standard `std` library.
 
 #### Containers
-*   **`ft::vector`**: A dynamic, contiguous array.
-*   **`ft::list`**: A doubly-linked list.
-*   **`ft::deque`**: A double-ended queue.
-*   **`ft::map`**: A red-black tree-based associative container.
-*   **`ft::set`**: A red-black tree-based associative container with unique keys.
-*   **`ft::stack`**: A container adaptor providing LIFO (Last-In, First-Out) functionality.
-*   **`ft::queue`**: A container adaptor providing FIFO (First-In, First-Out) functionality.
-*   **`ft::priority_queue`**: A container adaptor that provides constant time lookup of the largest element.
+*   **`vector`**: A dynamic array that provides contiguous storage.
+*   **`list`**: A doubly-linked list enabling efficient insertion and deletion.
+*   **`deque`**: A double-ended queue supporting fast insertions and deletions at both ends.
+*   **`map`**: An associative container that stores sorted key-value pairs, implemented as a red-black tree.
+*   **`set`**: An associative container that stores a sorted set of unique keys, implemented as a red-black tree.
+*   **`stack`**: A container adaptor providing LIFO (Last-In, First-Out) functionality.
+*   **`queue`**: A container adaptor providing FIFO (First-In, First-Out) functionality.
+*   **`priority_queue`**: A container adaptor providing constant-time lookup of the largest element.
 
-#### Utilities & Algorithms
-*   **Iterators**: Including `iterator`, `const_iterator`, `reverse_iterator`, and `const_reverse_iterator` for all containers.
-*   **Type Traits**: A collection of helpers like `is_integral` and `enable_if` to facilitate template metaprogramming.
+#### Core Utilities
+*   **Iterators**: Full support for `iterator`, `const_iterator`, `reverse_iterator`, and `const_reverse_iterator` for all containers.
+*   **Type Traits**: A collection of helpers like `is_integral` and `enable_if` to facilitate SFINAE and template metaprogramming.
 *   **Algorithms**: Implementations of `equal` and `lexicographical_compare`.
-*   **`ft::pair`**: A utility class for storing a pair of objects.
+*   **`pair`**: A utility class for storing a pair of objects, commonly used in `ft::map`.
 
 ## Getting Started
 
-To get a local copy up and running, follow these simple steps.
+Follow these steps to get a local copy up and running.
 
 ### Prerequisites
 
-You will need a C++ compiler (e.g., `g++` or `clang++`) and `make` installed on your system.
+To build and run this project, you will need:
+*   A C++ compiler that supports the C++98 standard (e.g., `g++` or `clang++`)
+*   `make`
 
 ### Building
 
@@ -122,13 +124,13 @@ You will need a C++ compiler (e.g., `g++` or `clang++`) and `make` installed on 
     ```sh
     make
     ```
-This will create an executable file that runs a series of tests on the custom containers.
+This command builds the main executable, which runs a series of internal tests to validate the custom containers.
 
 ## Usage
 
-To use a container, simply include the corresponding header file. All components are located in the `ft` namespace to avoid conflicts with the standard `std` library.
+To use a container in your own project, include the corresponding header file from the `include/` directory. All components are defined within the `ft` namespace.
 
-Here is a basic example of using `ft::vector`:
+For example, to use `ft::vector`:
 
 ```cpp
 #include <iostream>
@@ -151,24 +153,30 @@ int main() {
 }
 ```
 
+To compile this code, you need to tell the compiler where to find the header files using the `-I` flag.
+
+```sh
+c++ -Wall -Wextra -Werror -std=c++98 -I./include your_program.cpp -o my_app
+```
+
 ## Testing
 
-The repository includes multiple ways to test the implementation for correctness and performance.
+The repository includes comprehensive tests to verify correctness and measure performance against the standard library.
 
 ### Functional Tests
 
-The `tester/` directory contains external test suites for verifying correctness against the standard library.
+The `tester/` directory contains third-party test suites for verifying functional correctness and handling of edge cases.
 
-*   `static_tester.tar`: A comprehensive test suite for functionality and edge cases.
-*   `monkey_tester.tar`: A randomized tester to find more obscure bugs.
+*   `static_tester.tar`: A comprehensive test suite for functionality.
+*   `monkey_tester.tar`: A randomized tester designed to find obscure bugs.
 
-To use them, extract the archives and follow their respective instructions.
+To use them, extract the archives and follow the instructions in their respective README files.
 
-### Performance Tests
+### Performance Benchmarks
 
 The `speedtests/` directory contains benchmarks that compare the performance of each `ft` container against its `std` counterpart.
 
-You can run all speed tests using the provided shell script:
+To run all speed tests, execute the provided shell script:
 ```sh
 ./speedtests/speedtests.sh
 ```
