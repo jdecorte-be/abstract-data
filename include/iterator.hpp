@@ -360,7 +360,7 @@ namespace ft
          *
          * @complexity O(1)
          */
-        map_iterator() : ptr(nullptr), _end(NULL) {}
+        map_iterator() : ptr(NULL), _end(NULL) {}
 
         /**
          * Initializes map_iterator with a node pointer
@@ -669,7 +669,7 @@ namespace ft
          *
          * @complexity O(1)
          */
-        set_iterator() : ptr(nullptr), _end(nullptr) {}
+        set_iterator() : ptr(NULL), _end(NULL) {}
 
         /**
          * Initializes set_iterator with a node pointer and an optional end pointer
@@ -679,7 +679,7 @@ namespace ft
          *
          * @complexity O(1)
          */
-        set_iterator(Node *ptr, Node *end = nullptr) : ptr(ptr), _end(end) {}
+        set_iterator(Node *ptr, Node *end = NULL) : ptr(ptr), _end(end) {}
 
         /**
          * Copy constructor

@@ -1,0 +1,5 @@
+*.o
+ft_containers
+speedtests/bin/
+
+ft_containers
