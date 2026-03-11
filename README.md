@@ -75,18 +75,18 @@
 
 ## About This Project
 
-This project is a from-scratch re-implementation of a subset of the C++98 Standard Template Library (STL). Its primary goal is educational: to gain a deep understanding of the underlying mechanics of common data structures, iterators, and algorithms. Every component is built from the ground up to mimic the behavior and interface of the standard library, providing insight into memory management, template metaprogramming, and API design in C++98.
+This project is an educational re-implementation of a subset of the C++98 Standard Template Library (STL). It was built from scratch to gain a deep understanding of the underlying mechanics of common data structures, iterators, and algorithms. By mimicking the standard library's behavior and interface, this project provides practical insight into memory management, template metaprogramming, and API design in C++98.
 
 ## Implemented Components
 
-This library provides custom implementations of the following STL components, all within the `ft` namespace to prevent conflicts with the standard `std` library.
+This library provides custom implementations of the following STL components. To avoid conflicts with the standard library, all components are encapsulated within the `ft` namespace.
 
 #### Containers
-*   **`vector`**: A dynamic array that provides contiguous storage.
+*   **`vector`**: A dynamic array providing contiguous storage.
 *   **`list`**: A doubly-linked list enabling efficient insertion and deletion.
 *   **`deque`**: A double-ended queue supporting fast insertions and deletions at both ends.
-*   **`map`**: An associative container that stores sorted key-value pairs, implemented as a red-black tree.
-*   **`set`**: An associative container that stores a sorted set of unique keys, implemented as a red-black tree.
+*   **`map`**: An associative container storing sorted key-value pairs, implemented as a red-black tree.
+*   **`set`**: An associative container storing a sorted set of unique keys, implemented as a red-black tree.
 *   **`stack`**: A container adaptor providing LIFO (Last-In, First-Out) functionality.
 *   **`queue`**: A container adaptor providing FIFO (First-In, First-Out) functionality.
 *   **`priority_queue`**: A container adaptor providing constant-time lookup of the largest element.
@@ -95,37 +95,37 @@ This library provides custom implementations of the following STL components, al
 *   **Iterators**: Full support for `iterator`, `const_iterator`, `reverse_iterator`, and `const_reverse_iterator` for all containers.
 *   **Type Traits**: A collection of helpers like `is_integral` and `enable_if` to facilitate SFINAE and template metaprogramming.
 *   **Algorithms**: Implementations of `equal` and `lexicographical_compare`.
-*   **`pair`**: A utility class for storing a pair of objects, commonly used in `ft::map`.
+*   **`pair`**: A utility class for storing a pair of objects, commonly used with `ft::map`.
 
 ## Getting Started
 
-Follow these steps to get a local copy up and running.
+Follow these steps to build the project and run the internal tests.
 
 ### Prerequisites
 
-To build and run this project, you will need:
-*   A C++ compiler that supports the C++98 standard (e.g., `g++` or `clang++`)
+Ensure you have the following installed:
+*   A C++ compiler with C++98 support (e.g., `g++`, `clang++`)
 *   `make`
 
 ### Building
 
-1.  Clone the repository:
+1.  **Clone the repository:**
     ```sh
     git clone https://github.com/jdecorte-be/abstract-data.git
     ```
-2.  Navigate to the project directory:
+2.  **Navigate to the project directory:**
     ```sh
     cd abstract-data
     ```
-3.  Compile the project using the Makefile:
+3.  **Compile the project:**
     ```sh
     make
     ```
-This command builds the main executable, which runs a series of internal tests to validate the custom containers.
+This command builds the main executable, which runs a series of tests to validate the custom containers.
 
 ## Usage
 
-To use a container in your own project, include the corresponding header file from the `include/` directory. All components are defined within the `ft` namespace.
+To use a container in your own project, include the corresponding header file from the `include/` directory.
 
 For example, to use `ft::vector`:
 
@@ -150,7 +150,7 @@ int main() {
 }
 ```
 
-To compile this code, you need to tell the compiler where to find the header files using the `-I` flag.
+When compiling your code, you must tell the compiler where to find the header files using the `-I` flag.
 
 ```sh
 c++ -Wall -Wextra -Werror -std=c++98 -I./include your_program.cpp -o my_app
@@ -158,14 +158,14 @@ c++ -Wall -Wextra -Werror -std=c++98 -I./include your_program.cpp -o my_app
 
 ## Testing
 
-The repository includes comprehensive tests to verify correctness and measure performance against the standard library.
+The repository includes comprehensive tests to verify functional correctness and benchmark performance against the standard `std` library.
 
 ### Functional Tests
 
-The `tester/` directory contains third-party test suites for verifying functional correctness and handling of edge cases.
+The `tester/` directory contains third-party test suites for verifying correct behavior and handling of edge cases.
 
 *   `static_tester.tar`: A comprehensive test suite for functionality.
-*   `monkey_tester.tar`: A randomized tester designed to find obscure bugs.
+*   `monkey_tester.tar`: A randomized "monkey" tester for discovering obscure bugs.
 
 To use them, extract the archives and follow the instructions in their respective README files.
 
@@ -177,3 +177,7 @@ To run all speed tests, execute the provided shell script:
 ```sh
 ./speedtests/speedtests.sh
 ```
+
+## License
+
+This project is distributed under the MIT License. See the `LICENSE` file for more information.
