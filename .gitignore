@@ -1,5 +1,4 @@
 *.o
+.objs/
 ft_containers
 speedtests/bin/
-
-ft_containers
